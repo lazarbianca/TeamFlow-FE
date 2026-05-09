@@ -23,7 +23,7 @@ export default function TeamsScreen() {
                 <Text style={styles.title}>Workspaces</Text>
 
                 <TouchableOpacity
-                    onPress={() => router.push('/teams')}
+                    onPress={() => router.push('/browse-teams')}
                     style={styles.iconButton}
                 >
                     <Feather name="edit-2" size={20} color="#4B1363" />
