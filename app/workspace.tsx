@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
-import { SafeAreaView, FlatList, Text, View, StyleSheet } from 'react-native';
+import {SafeAreaView, FlatList, Text, View, StyleSheet, Button, TouchableOpacity} from 'react-native';
 import { mockTeams } from '@/constants/mock-teams';
 import {Image} from "expo-image";
+import {router} from "expo-router";
+import {Feather} from "@expo/vector-icons";
 
 const PURPLE = '#4B1363';
 
@@ -17,8 +19,16 @@ export default function TeamsScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.title}>Workspaces</Text>
+            <View style={styles.searchDiv}>
+                <Text style={styles.title}>Workspaces</Text>
 
+                <TouchableOpacity
+                    onPress={() => router.push('/teams')}
+                    style={styles.iconButton}
+                >
+                    <Feather name="edit-2" size={20} color="#4B1363" />
+                </TouchableOpacity>
+            </View>
             <FlatList
                 data={myTeams}
                 keyExtractor={(item) => item.id}
@@ -51,6 +61,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: PURPLE,
         marginTop: 10,
+        paddingHorizontal: 20,
     },
     card: {
         flexDirection: 'row',
@@ -78,5 +89,19 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         marginRight: 10,
+    },
+    iconButton: {
+        width: 40,
+        height: 40,
+        //borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#000',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+    },
+    searchDiv:{
+        flexDirection: 'row',
+
     }
 });
