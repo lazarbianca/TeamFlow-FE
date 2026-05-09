@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import {SafeAreaView, FlatList, Text, View, StyleSheet, Button, TouchableOpacity} from 'react-native';
+import {SafeAreaView, FlatList, Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { mockTeams } from '@/constants/mock-teams';
 import {Image} from "expo-image";
 import {router} from "expo-router";
@@ -60,8 +60,6 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: '700',
         color: PURPLE,
-        marginTop: 10,
-        paddingHorizontal: 20,
     },
     card: {
         flexDirection: 'row',
@@ -70,6 +68,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ddd',
         marginBottom: 12,
+        marginHorizontal: 30,
     },
     teamName: {
         fontSize: 18,
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
     iconButton: {
         width: 40,
         height: 40,
-        //borderRadius: 20,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: '#000',
         alignItems: 'center',
@@ -102,6 +101,9 @@ const styles = StyleSheet.create({
     },
     searchDiv:{
         flexDirection: 'row',
-
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 10,
+        paddingHorizontal: 20,
     }
 });

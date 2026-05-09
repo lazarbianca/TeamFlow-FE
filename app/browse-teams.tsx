@@ -1,6 +1,7 @@
 import { mockTeams } from "@/constants/mock-teams";
+import { Team } from "@/types/team";
 import { Feather } from "@expo/vector-icons";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   FlatList,
@@ -24,7 +25,7 @@ export default function BrowseTeamsScreen() {
 
   const allTeams = useMemo(() => {
     return mockTeams.filter((team) => !team.members.includes(currentUser.id));
-  }, []);
+  }, [currentUser.id]);
 
   const getStatusColor = (status: string) => {
     return status === "available" ? "#22C55E" : "#EF4444";
@@ -59,8 +60,17 @@ export default function BrowseTeamsScreen() {
     </ScrollView>
   );
 
-  const renderTeamCard = ({ item }: any) => (
-    <View style={styles.card}>
+  const renderTeamCard = ({ item }: { item: Team }) => (
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.85}
+      onPress={() =>
+        router.push({
+          pathname: "/team-details/[id]",
+          params: { id: item.id },
+        })
+      }
+    >
       <View style={styles.cardContent}>
         <View style={styles.cardHeader}>
           <Text style={styles.memberCount}>{item.memberCount} members</Text>
@@ -91,10 +101,10 @@ export default function BrowseTeamsScreen() {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.arrowButton}>
+      <View style={styles.arrowButton}>
         <Feather name="chevron-right" size={24} color={PURPLE} />
-      </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
