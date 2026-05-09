@@ -35,7 +35,7 @@ export default function SignupScreen() {
   const onRegister = () => {
     // TODO: Replace with real API call.
     // For now, simulate a successful registration by entering the authed app section.
-    router.replace('/(app)/(tabs)/explore');
+    router.replace('/workspace');
   };
 
   return (

@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import {mockUsers} from "@/constants/mock-users";
 
 const PURPLE = '#4B1363';
 
@@ -25,8 +26,18 @@ export default function LoginScreen() {
 
   const onLogin = () => {
     // TODO: Replace with real API call.
-    // For now, accept any credentials.
-    router.replace('/(app)/(tabs)/explore');
+    const users=mockUsers;
+    let found=false;
+    for(let i=0; i<users.length; i++)
+    {
+        if (users[i].email === email&& users[i].password === password)
+        {
+            router.replace('/workspace');
+            found=true;
+        }
+    }
+    if(!found)
+        alert("wrong credentials!")
   };
 
   return (
