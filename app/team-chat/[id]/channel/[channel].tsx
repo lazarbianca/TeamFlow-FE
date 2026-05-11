@@ -1,6 +1,6 @@
 import { mockTeams } from "@/constants/mock-teams";
 import { mockUsers } from "@/constants/mock-users";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useMemo, useState, useRef, useEffect } from "react";
@@ -255,7 +255,7 @@ export default function TeamChannelScreen() {
           onPress={handleSendMessage}
           disabled={!inputText.trim()}
         >
-          <Feather name="arrow-up" size={20} color="#fff" />
+          <Ionicons name="send" size={20} color="white" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
