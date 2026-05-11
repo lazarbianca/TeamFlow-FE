@@ -32,6 +32,7 @@ export default function TeamChannelScreen() {
   const [userReactions, setUserReactions] = useState<Set<string>>(new Set());
   const [inputText, setInputText] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
+  const isAnnouncements = currentChannel?.name === "announcements";
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -163,8 +164,68 @@ export default function TeamChannelScreen() {
                       fullName: "You",
                       avatar: "https://i.pravatar.cc/150?u=you",
                     }
-                  : { fullName: "Unknown" });
+                  : {
+                      fullName: "Unknown",
+                      avatar: "https://i.pravatar.cc/150?u=unknown",
+                    });
               const isCurrentUser = message.userId === "currentUser";
+
+              if (isAnnouncements) {
+                return (
+                  <View key={message.id} style={styles.announcementCard}>
+                    <View style={styles.announcementHeader}>
+                      <View style={styles.avatarWrapper}>
+                        <Image
+                          source={{ uri: sender.avatar }}
+                          style={styles.announcementAvatar}
+                        />
+                      </View>
+                      <View style={styles.announcementMeta}>
+                        <Text style={styles.messageAuthor}>
+                          {sender.fullName}
+                        </Text>
+                        <Text style={styles.messageTime}>
+                          {message.timestamp}
+                        </Text>
+                      </View>
+                      {message.status ? (
+                        <View
+                          style={[
+                            styles.announcementBadge,
+                            message.status === "approved"
+                              ? styles.badgeApproved
+                              : styles.badgePending,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.announcementBadgeText,
+                              message.status === "approved"
+                                ? styles.badgeApprovedText
+                                : styles.badgePendingText,
+                            ]}
+                          >
+                            {message.status}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+                    <Text style={styles.announcementText} numberOfLines={0}>
+                      {message.content}
+                    </Text>
+                    {message.approval ? (
+                      <View style={styles.approvalBox}>
+                        <Text style={styles.approvalTitle}>
+                          {message.approval.approver}
+                        </Text>
+                        <Text style={styles.approvalNote}>
+                          {message.approval.note}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                );
+              }
 
               return (
                 <View key={message.id}>
@@ -334,6 +395,81 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#374151",
     lineHeight: 22,
+  },
+  announcementCard: {
+    backgroundColor: "#fff",
+    borderRadius: 24,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  announcementHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  avatarWrapper: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: "#F3F4F6",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  announcementAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+  },
+  announcementMeta: {
+    flex: 1,
+  },
+  announcementText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#111827",
+    marginBottom: 12,
+  },
+  announcementBadge: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  announcementBadgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+  },
+  badgePending: {
+    backgroundColor: "#F3F4F6",
+  },
+  badgePendingText: {
+    color: "#6B7280",
+  },
+  badgeApproved: {
+    backgroundColor: "#E9D5FF",
+  },
+  badgeApprovedText: {
+    color: "#6B21A8",
+  },
+  approvalBox: {
+    borderRadius: 18,
+    backgroundColor: "#E9D5FF",
+    padding: 14,
+  },
+  approvalTitle: {
+    fontWeight: "700",
+    color: "#3F1852",
+    marginBottom: 4,
+  },
+  approvalNote: {
+    color: "#3F1852",
+    lineHeight: 20,
   },
   reactionsRow: {
     flexDirection: "row",
