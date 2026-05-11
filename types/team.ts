@@ -1,4 +1,5 @@
 import { Achievement } from './achievement';
+import { Channel, DirectMessage } from './chat';
 import { Project } from './project';
 
 export interface Team {
@@ -14,4 +15,6 @@ export interface Team {
     achievements: Achievement[];
     recentProjects: Project[];
     members: string[];
+    channels: Channel[];
+    directMessages: DirectMessage[];
 }
