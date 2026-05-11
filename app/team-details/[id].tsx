@@ -50,6 +50,17 @@ export default function TeamDetailsScreen() {
     router.replace("/browse-teams");
   };
 
+  const isJoinDisabled = !team || team.status !== "available";
+
+  const handleJoin = () => {
+    if (isJoinDisabled || !team) return;
+
+    // Toast
+    alert(`You have requested to join ${team.name}.`);
+
+    // API call
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -87,6 +98,7 @@ export default function TeamDetailsScreen() {
 
       <View style={styles.body}>
         <ScrollView
+          style={styles.scroll}
           contentContainerStyle={styles.bodyContent}
           showsVerticalScrollIndicator={false}
         >
@@ -172,6 +184,31 @@ export default function TeamDetailsScreen() {
             </>
           )}
         </ScrollView>
+
+        <View style={styles.joinBar}>
+          <TouchableOpacity
+            style={[styles.joinButton, isJoinDisabled && styles.joinButtonDisabled]}
+            onPress={handleJoin}
+            disabled={isJoinDisabled}
+            accessibilityRole="button"
+            accessibilityLabel="Join team"
+            accessibilityState={{ disabled: isJoinDisabled }}
+            activeOpacity={0.85}
+          >
+            <Text
+              style={[
+                styles.joinButtonText,
+                isJoinDisabled && styles.joinButtonTextDisabled,
+              ]}
+            >
+              {team?.status === "busy" ? "Busy" : "Join"}
+            </Text>
+          </TouchableOpacity>
+
+          {team?.status === "busy" && (
+            <Text style={styles.joinHint}>This team is currently busy.</Text>
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -238,6 +275,42 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 28,
+  },
+  scroll: {
+    flex: 1,
+  },
+  joinBar: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#E5E7EB",
+    backgroundColor: "#fff",
+  },
+  joinButton: {
+    height: 52,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: PURPLE,
+  },
+  joinButtonDisabled: {
+    backgroundColor: "#D1D5DB",
+  },
+  joinButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "900",
+    letterSpacing: 0.2,
+  },
+  joinButtonTextDisabled: {
+    color: "#6B7280",
+  },
+  joinHint: {
+    marginTop: 10,
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#6B7280",
   },
   pageTitle: {
     fontSize: 18,
