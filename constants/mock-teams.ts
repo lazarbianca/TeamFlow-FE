@@ -20,6 +20,49 @@ export const mockTeams: Team[] = [
             { name: 'Mobile App Redesign', client: 'TechCorp', date: 'Mar 2026', rating: 5 },
             { name: 'Component Library', client: 'StartupXYZ', date: 'Feb 2026', rating: 4.9 },
         ],
+        channels: [
+            { id: 'c1', name: 'general', messages: [] },
+            { 
+                id: 'c2', 
+                name: 'design-reviews', 
+                messages: [
+                    {
+                        id: 'm1',
+                        userId: '1', // Sarah Chen
+                        content: "Can someone review the new dashboard mockups? I've updated the color scheme and added the requested analytics cards.",
+                        timestamp: '10:00 AM'
+                    },
+                    {
+                        id: 'm2',
+                        userId: '2', // Alex Stanescu
+                        content: "I'll take a look! 👍",
+                        timestamp: '10:05 AM',
+                        reactions: [{ emoji: '👍', count: 2 }]
+                    },
+                    {
+                        id: 'm3',
+                        userId: '4', // Jordan Lee
+                        content: "Looking good! The new layout feels much cleaner.",
+                        timestamp: '10:15 AM'
+                    },
+                    {
+                        id: 'm4',
+                        userId: 'currentUser', // Represents "You"
+                        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae gravida ex. Curabitur ultricies, tellus mattis eleifend ornare, lectus elit rutrum augue...",
+                        timestamp: '10:30 AM'
+                    }
+                ] 
+            },
+            { id: 'c3', name: 'resources', messages: [] },
+            { id: 'c4', name: 'random', messages: [] },
+            { id: 'c5', name: 'announcements', messages: [] },
+        ],
+        directMessages: [
+            { id: 'dm1', otherUserId: '1', unreadCount: 2, messages: [] }, // Sarah Chen
+            { id: 'dm2', otherUserId: '2', unreadCount: 0, messages: [] }, // Alex Stanescu
+            { id: 'dm3', otherUserId: '3', unreadCount: 10, messages: [] }, // Maddie Anita
+            { id: 'dm4', otherUserId: '4', unreadCount: 0, messages: [] }, // Jordan Lee
+        ]
     },
     {
         id: '2',
@@ -40,6 +83,8 @@ export const mockTeams: Team[] = [
             { name: 'API Gateway', client: 'FinTech Inc', date: 'Mar 2026', rating: 4.7 },
             { name: 'Auth Service', client: 'TechCorp', date: 'Jan 2026', rating: 4.5 },
         ],
+        channels: [],
+        directMessages: []
     },
     {
         id: '3',
