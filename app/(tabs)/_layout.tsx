@@ -1,13 +1,35 @@
-import { Redirect } from 'expo-router';
+import { Tabs } from 'expo-router';
+import React from 'react';
 
-/**
- * NOTE:
- * This project has been restructured to use a pre-auth landing screen at `/`
- * and to place the tab navigator under `/(app)/(tabs)`.
- *
- * This legacy route group is kept as a redirect to avoid routing conflicts
- * if the folder wasn't removed.
- */
-export default function LegacyTabsLayout() {
-  return <Redirect href="/" />;
+import { HapticTab } from '@/components/haptic-tab';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+
+export default function TabLayout() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        headerShown: false,
+        tabBarButton: HapticTab,
+      }}>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: 'Explore',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+        }}
+      />
+    </Tabs>
+  );
 }
