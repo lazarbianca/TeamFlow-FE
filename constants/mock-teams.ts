@@ -76,7 +76,31 @@ export const mockTeams: Team[] = [
       },
       { id: "c3", name: "resources", messages: [] },
       { id: "c4", name: "random", messages: [] },
-      { id: "c5", name: "announcements", messages: [] },
+      {
+        id: "c5",
+        name: "announcements",
+        messages: [
+          {
+            id: "m5a",
+            userId: "1",
+            content:
+              "We've completed the Q1 milestones and are ready for review.",
+            timestamp: "2 hours ago",
+            status: "pending",
+          },
+          {
+            id: "m5b",
+            userId: "1",
+            content: "Requesting extension for the final deliverable.",
+            timestamp: "1 day ago",
+            status: "approved",
+            approval: {
+              approver: "Project Coordinator",
+              note: "Approved. New deadline is April 26th.",
+            },
+          },
+        ],
+      },
     ],
     directMessages: [
       {

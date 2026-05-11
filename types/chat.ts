@@ -9,6 +9,11 @@ export interface Message {
     content: string;
     timestamp: string;
     reactions?: Reaction[];
+    status?: "pending" | "approved" | "declined";
+    approval?: {
+        approver: string;
+        note: string;
+    };
 }
 
 export interface Channel {
