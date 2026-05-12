@@ -5,6 +5,7 @@ import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,41 +13,45 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const PURPLE = "#4B1363";
 
-export default function TeamChannelScreen() {
-  const { id, channel } = useLocalSearchParams<{
+export default function TeamDMScreen() {
+  const { id, dm } = useLocalSearchParams<{
     id: string;
-    channel: string;
+    dm: string;
   }>();
 
   const team = useMemo(() => mockTeams.find((t) => t.id === id), [id]);
-  const currentChannel = useMemo(
-    () => team?.channels.find((item) => item.name === channel),
-    [team, channel],
+  const currentDM = useMemo(
+    () => team?.directMessages.find((item) => item.id === dm),
+    [team, dm],
   );
 
-  const [messages, setMessages] = useState(currentChannel?.messages || []);
+  const otherUser = useMemo(
+    () => mockUsers.find((user) => user.id === currentDM?.otherUserId),
+    [currentDM],
+  );
+
+  const [messages, setMessages] = useState(currentDM?.messages || []);
   const [userReactions, setUserReactions] = useState<Set<string>>(new Set());
   const [inputText, setInputText] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
-  const isAnnouncements = currentChannel?.name === "announcements";
 
+  // Auto-scroll to bottom when new messages are added
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
   }, [messages]);
 
-  if (!team || !currentChannel) {
+  if (!team || !currentDM || !otherUser) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.emptyStateContainer}>
-          <Text style={styles.emptyStateTitle}>Channel not found</Text>
+          <Text style={styles.emptyStateTitle}>DM not found</Text>
           <Text style={styles.emptyStateText}>
-            The selected channel does not exist for this team.
+            The selected direct message does not exist for this team.
           </Text>
         </View>
       </SafeAreaView>
@@ -79,7 +84,7 @@ export default function TeamChannelScreen() {
 
           if (hasUserReacted) {
             if (existingReaction && existingReaction.count > 1) {
-              const newReactions = msg.reactions!.map((r) =>
+              const newReactions = msg.reactions?.map((r) =>
                 r.emoji === "👍" ? { ...r, count: r.count - 1 } : r,
               );
               return { ...msg, reactions: newReactions };
@@ -93,7 +98,7 @@ export default function TeamChannelScreen() {
             }
           } else {
             if (existingReaction) {
-              const newReactions = msg.reactions!.map((r) =>
+              const newReactions = msg.reactions?.map((r) =>
                 r.emoji === "👍" ? { ...r, count: r.count + 1 } : r,
               );
               return { ...msg, reactions: newReactions };
@@ -130,8 +135,8 @@ export default function TeamChannelScreen() {
         >
           <Feather name="chevron-left" size={28} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>#{currentChannel.name}</Text>
-        <Image source={{ uri: team.avatar }} style={styles.headerAvatar} />
+        <Text style={styles.headerTitle}>{otherUser.fullName}</Text>
+        <Image source={{ uri: otherUser.avatar }} style={styles.headerAvatar} />
       </View>
 
       <ScrollView
@@ -144,7 +149,7 @@ export default function TeamChannelScreen() {
             <View style={styles.emptyStateContainer}>
               <Text style={styles.emptyStateTitle}>No messages yet</Text>
               <Text style={styles.emptyStateText}>
-                Start the conversation in this channel.
+                Start the conversation with {otherUser.fullName}.
               </Text>
             </View>
           ) : (
@@ -156,37 +161,8 @@ export default function TeamChannelScreen() {
                       fullName: "You",
                       avatar: "https://i.pravatar.cc/150?u=you",
                     }
-                  : {
-                      fullName: "Unknown",
-                      avatar: "https://i.pravatar.cc/150?u=unknown",
-                    });
+                  : { fullName: "Unknown" });
               const isCurrentUser = message.userId === "currentUser";
-
-              if (isAnnouncements) {
-                return (
-                  <View key={message.id} style={styles.announcementCard}>
-                    <View style={styles.announcementHeader}>
-                      <View style={styles.avatarWrapper}>
-                        <Image
-                          source={{ uri: sender.avatar }}
-                          style={styles.announcementAvatar}
-                        />
-                      </View>
-                      <View style={styles.announcementMeta}>
-                        <Text style={styles.messageAuthor}>
-                          {sender.fullName}
-                        </Text>
-                        <Text style={styles.messageTime}>
-                          {message.timestamp}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text style={styles.announcementText} numberOfLines={0}>
-                      {message.content}
-                    </Text>
-                  </View>
-                );
-              }
 
               return (
                 <View key={message.id}>
@@ -255,14 +231,15 @@ export default function TeamChannelScreen() {
       <View style={styles.composerBar}>
         <TextInput
           style={styles.composerInput}
-          placeholder={`Message #${currentChannel.name}`}
+          placeholder={`Message ${otherUser.fullName}`}
           placeholderTextColor="#9CA3AF"
           value={inputText}
           onChangeText={setInputText}
           multiline
           maxLength={500}
           onKeyPress={(e) => {
-            if (e.nativeEvent.key === "Enter") {
+            if (e.nativeEvent.key === "Enter" && !e.nativeEvent.shiftKey) {
+              e.preventDefault();
               handleSendMessage();
             }
           }}
@@ -331,119 +308,48 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   messageBubbleLeft: {
-    alignSelf: "flex-start",
     backgroundColor: "#F3F4F6",
+    marginRight: 60,
   },
   messageBubbleRight: {
-    alignSelf: "flex-end",
     backgroundColor: "#E9D5FF",
+    marginLeft: 60,
+    alignSelf: "flex-end",
   },
   messageTopRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
   messageAuthor: {
-    fontWeight: "700",
-    color: "#111827",
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#6B7280",
   },
   messageTime: {
     fontSize: 12,
-    color: "#6B7280",
+    color: "#9CA3AF",
   },
   messageText: {
-    fontSize: 15,
-    color: "#374151",
-    lineHeight: 22,
-  },
-  announcementCard: {
-    backgroundColor: "#fff",
-    borderRadius: 24,
-    padding: 18,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  announcementHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  avatarWrapper: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: "#F3F4F6",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  announcementAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-  },
-  announcementMeta: {
-    flex: 1,
-  },
-  announcementText: {
     fontSize: 16,
-    lineHeight: 24,
-    color: "#111827",
-    marginBottom: 12,
+    lineHeight: 22,
+    color: "#374151",
   },
   reactionsRow: {
     flexDirection: "row",
-    gap: 8,
-    flexWrap: "wrap",
     marginTop: 12,
+    gap: 8,
   },
   reactionPill: {
-    backgroundColor: "#F3F4F6",
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    backgroundColor: "#E5E7EB",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   reactionText: {
-    color: "#374151",
-    fontSize: 13,
-  },
-  composerBar: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 14,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#E5E7EB",
-  },
-  composerInput: {
-    flex: 1,
-    borderRadius: 999,
-    backgroundColor: "#F9FAFB",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: "#374151",
-    maxHeight: 100,
-  },
-  sendButton: {
-    marginLeft: 12,
-    backgroundColor: PURPLE,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  sendButtonDisabled: {
-    backgroundColor: "#D1D5DB", 
+    fontSize: 14,
+    color: "#6B7280",
   },
   reactionButton: {
     marginBottom: 8,
@@ -460,30 +366,63 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     marginRight: 16,
   },
+  reactionButtonActive: {
+    backgroundColor: PURPLE,
+  },
   reactionButtonText: {
     fontSize: 14,
     color: "#6B7280",
   },
-  reactionButtonActive: {
-    backgroundColor: PURPLE,
-  },
   reactionButtonTextActive: {
     color: "#fff",
   },
-  emptyStateContainer: {
-    padding: 28,
+  composerBar: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#E5E7EB",
+  },
+  composerInput: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginRight: 12,
+    fontSize: 16,
+    maxHeight: 120,
+    minHeight: 44,
+  },
+  sendButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: PURPLE,
+    justifyContent: "center",
     alignItems: "center",
   },
+  sendButtonDisabled: {
+    backgroundColor: "#D1D5DB",
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 60,
+  },
   emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#111827",
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#374151",
     marginBottom: 8,
   },
   emptyStateText: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#6B7280",
     textAlign: "center",
-    lineHeight: 20,
+    maxWidth: 280,
   },
 });
