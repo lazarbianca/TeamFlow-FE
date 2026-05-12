@@ -1,6 +1,7 @@
 import { Achievement } from './achievement';
 import { Channel, DirectMessage } from './chat';
 import { Project } from './project';
+import { SharedFile } from './shared-file';
 
 export interface Team {
     id: string;
@@ -17,4 +18,5 @@ export interface Team {
     members: string[];
     channels: Channel[];
     directMessages: DirectMessage[];
+    sharedFiles: SharedFile[];
 }

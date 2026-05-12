@@ -26,42 +26,67 @@ export const mockTeams: Team[] = [
                 id: 'c2', 
                 name: 'design-reviews', 
                 messages: [
-                    {
-                        id: 'm1',
-                        userId: '1', // Sarah Chen
-                        content: "Can someone review the new dashboard mockups? I've updated the color scheme and added the requested analytics cards.",
-                        timestamp: '10:00 AM'
-                    },
-                    {
-                        id: 'm2',
-                        userId: '2', // Alex Stanescu
-                        content: "I'll take a look! 👍",
-                        timestamp: '10:05 AM',
-                        reactions: [{ emoji: '👍', count: 2 }]
-                    },
-                    {
-                        id: 'm3',
-                        userId: '4', // Jordan Lee
-                        content: "Looking good! The new layout feels much cleaner.",
-                        timestamp: '10:15 AM'
-                    },
-                    {
-                        id: 'm4',
-                        userId: 'currentUser', // Represents "You"
-                        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae gravida ex. Curabitur ultricies, tellus mattis eleifend ornare, lectus elit rutrum augue...",
-                        timestamp: '10:30 AM'
-                    }
+                    { id: 'm1', userId: '1', content: "Can someone review the new dashboard mockups?", timestamp: '10:00 AM' },
+                    { id: 'm2', userId: '2', content: "I'll take a look! 👍", timestamp: '10:05 AM', reactions: [{ emoji: '👍', count: 2 }] },
                 ] 
             },
-            { id: 'c3', name: 'resources', messages: [] },
-            { id: 'c4', name: 'random', messages: [] },
-            { id: 'c5', name: 'announcements', messages: [] },
+            { id: "c3", name: "resources", messages: [] },
+      { id: "c4", name: "random", messages: [] },
+      {
+        id: "c5",
+        name: "announcements",
+        messages: [
+          {
+            id: "m5a",
+            userId: "1",
+            content:
+              "We've completed the Q1 milestones and are ready for review.",
+            timestamp: "2 hours ago",
+            status: "pending",
+          },
+          {
+            id: "m5b",
+            userId: "1",
+            content: "Requesting extension for the final deliverable.",
+            timestamp: "1 day ago",
+            status: "approved",
+            approval: {
+              approver: "Project Coordinator",
+              note: "Approved. New deadline is April 26th.",
+            },
+          },
+        ],
+      },
         ],
         directMessages: [
-            { id: 'dm1', otherUserId: '1', unreadCount: 2, messages: [] }, // Sarah Chen
-            { id: 'dm2', otherUserId: '2', unreadCount: 0, messages: [] }, // Alex Stanescu
-            { id: 'dm3', otherUserId: '3', unreadCount: 10, messages: [] }, // Maddie Anita
-            { id: 'dm4', otherUserId: '4', unreadCount: 0, messages: [] }, // Jordan Lee
+            { id: 'dm1', otherUserId: '1', unreadCount: 2, messages: [] }, 
+            { id: 'dm2', otherUserId: '2', unreadCount: 0, messages: [] }, 
+        ],
+        sharedFiles: [
+            {
+                id: 'f1',
+                name: 'Dashboard_Mockups_Final.pdf',
+                size: '4.2 MB',
+                type: 'pdf',
+                uploadedBy: '1',
+                uploadDate: 'Oct 24, 2026'
+            },
+            {
+                id: 'f2',
+                name: 'brand_assets_and_fonts.zip',
+                size: '18.5 MB',
+                type: 'archive',
+                uploadedBy: '2',
+                uploadDate: 'Oct 20, 2026'
+            },
+            {
+                id: 'f3',
+                name: 'architecture_diagram.png',
+                size: '1.1 MB',
+                type: 'image',
+                uploadedBy: '4',
+                uploadDate: 'Oct 18, 2026'
+            }
         ]
     },
     {
@@ -84,7 +109,8 @@ export const mockTeams: Team[] = [
             { name: 'Auth Service', client: 'TechCorp', date: 'Jan 2026', rating: 4.5 },
         ],
         channels: [],
-        directMessages: []
+        directMessages: [],
+        sharedFiles: []
     },
     {
         id: '3',
@@ -104,7 +130,8 @@ export const mockTeams: Team[] = [
             { name: 'E-commerce Platform', client: 'ShopNow', date: 'Feb 2026', rating: 3.8 },
         ],
         channels: [],
-        directMessages: []
+        directMessages: [],
+        sharedFiles: []
     },
     {
         id: '4',
@@ -124,7 +151,8 @@ export const mockTeams: Team[] = [
             { name: 'Sentiment Analyzer', client: 'MediaCo', date: 'Mar 2026', rating: 4.0 },
         ],
         channels: [],
-        directMessages: []
+        directMessages: [],
+        sharedFiles: []
     },
     {
         id: '5',
@@ -144,7 +172,8 @@ export const mockTeams: Team[] = [
             { name: 'Fitness Tracker', client: 'HealthPlus', date: 'Feb 2026', rating: 4.2 },
         ],
         channels: [],
-        directMessages: []
+        directMessages: [],
+        sharedFiles: []
     },
     {
         id: '6',
@@ -164,7 +193,8 @@ export const mockTeams: Team[] = [
             { name: 'CRM Migration', client: 'BigCorp', date: 'Jan 2026', rating: 3.9 },
         ],
         channels: [],
-        directMessages: []
+        directMessages: [],
+        sharedFiles: []
     },
     {
         id: '7',
@@ -184,6 +214,7 @@ export const mockTeams: Team[] = [
             { name: 'Student Portal', client: 'University', date: 'Mar 2026', rating: 4.1 },
         ],
         channels: [],
-        directMessages: []
+        directMessages: [],
+        sharedFiles: []
     },
 ];
