@@ -6,4 +6,5 @@ export interface SharedFile {
     uploadedBy: string;
     uploadDate: string;
     content?: string;
+    imageUri?: string;
 }
