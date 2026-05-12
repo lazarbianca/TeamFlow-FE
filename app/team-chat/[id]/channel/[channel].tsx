@@ -1,4 +1,3 @@
-// /app/team-chat/[id]/channel/[channel].tsx
 import { mockTeams } from "@/constants/mock-teams";
 import { mockUsers } from "@/constants/mock-users";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -6,6 +5,7 @@ import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const PURPLE = "#4B1363";
 
@@ -35,6 +34,7 @@ export default function TeamChannelScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const isAnnouncements = currentChannel?.name === "announcements";
 
+  // Auto-scroll to bottom when new messages are added
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
@@ -81,12 +81,13 @@ export default function TeamChannelScreen() {
           if (hasUserReacted) {
             // User is removing their reaction
             if (existingReaction && existingReaction.count > 1) {
-              // Add non-null assertion (!) because we know it exists
-              const newReactions = msg.reactions!.map((r) =>
+              // Decrement count
+              const newReactions = msg.reactions?.map((r) =>
                 r.emoji === "👍" ? { ...r, count: r.count - 1 } : r,
               );
               return { ...msg, reactions: newReactions };
             } else {
+              // Remove reaction entirely
               const newReactions =
                 msg.reactions?.filter((r) => r.emoji !== "👍") || [];
               return {
@@ -97,12 +98,13 @@ export default function TeamChannelScreen() {
           } else {
             // User is adding reaction
             if (existingReaction) {
-              // Add non-null assertion (!) because we know it exists
-              const newReactions = msg.reactions!.map((r) =>
+              // Increment existing count
+              const newReactions = msg.reactions?.map((r) =>
                 r.emoji === "👍" ? { ...r, count: r.count + 1 } : r,
               );
               return { ...msg, reactions: newReactions };
             } else {
+              // Add new reaction
               const newReactions = [
                 ...(msg.reactions || []),
                 { emoji: "👍", count: 1 },
@@ -115,6 +117,7 @@ export default function TeamChannelScreen() {
       }),
     );
 
+    // Update user reaction state
     setUserReactions((prev) => {
       const newSet = new Set(prev);
       if (hasUserReacted) {
@@ -185,10 +188,41 @@ export default function TeamChannelScreen() {
                           {message.timestamp}
                         </Text>
                       </View>
+                      {message.status ? (
+                        <View
+                          style={[
+                            styles.announcementBadge,
+                            message.status === "approved"
+                              ? styles.badgeApproved
+                              : styles.badgePending,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.announcementBadgeText,
+                              message.status === "approved"
+                                ? styles.badgeApprovedText
+                                : styles.badgePendingText,
+                            ]}
+                          >
+                            {message.status}
+                          </Text>
+                        </View>
+                      ) : null}
                     </View>
                     <Text style={styles.announcementText} numberOfLines={0}>
                       {message.content}
                     </Text>
+                    {message.approval ? (
+                      <View style={styles.approvalBox}>
+                        <Text style={styles.approvalTitle}>
+                          {message.approval.approver}
+                        </Text>
+                        <Text style={styles.approvalNote}>
+                          {message.approval.note}
+                        </Text>
+                      </View>
+                    ) : null}
                   </View>
                 );
               }
@@ -267,8 +301,8 @@ export default function TeamChannelScreen() {
           multiline
           maxLength={500}
           onKeyPress={(e) => {
-            // Fixed React Native event typing
-            if (e.nativeEvent.key === "Enter") {
+            if (e.nativeEvent.key === "Enter" && !e.nativeEvent.shiftKey) {
+              e.preventDefault();
               handleSendMessage();
             }
           }}
@@ -401,6 +435,42 @@ const styles = StyleSheet.create({
     color: "#111827",
     marginBottom: 12,
   },
+  announcementBadge: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  announcementBadgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+  },
+  badgePending: {
+    backgroundColor: "#F3F4F6",
+  },
+  badgePendingText: {
+    color: "#6B7280",
+  },
+  badgeApproved: {
+    backgroundColor: "#E9D5FF",
+  },
+  badgeApprovedText: {
+    color: "#6B21A8",
+  },
+  approvalBox: {
+    borderRadius: 18,
+    backgroundColor: "#E9D5FF",
+    padding: 14,
+  },
+  approvalTitle: {
+    fontWeight: "700",
+    color: "#3F1852",
+    marginBottom: 4,
+  },
+  approvalNote: {
+    color: "#3F1852",
+    lineHeight: 20,
+  },
   reactionsRow: {
     flexDirection: "row",
     gap: 8,
@@ -447,9 +517,6 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-  },
-  sendButtonDisabled: {  // <--- Added missing style here
-    backgroundColor: "#D1D5DB", 
   },
   reactionButton: {
     marginBottom: 8,
