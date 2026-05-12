@@ -147,8 +147,7 @@ export const mockTeams: Team[] = [
                 type: "image",
                 uploadedBy: "4",
                 uploadDate: "Oct 18, 2026",
-                content: 'import React from "react";\nimport { View, Text } from "react-native";\n\nexport default function App() {\n  return (\n    <View>\n      <Text>Hello World</Text>\n    </View>\n  );\n}'
-            }
+                imageUri: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop'            }
         ]
     },
     {
