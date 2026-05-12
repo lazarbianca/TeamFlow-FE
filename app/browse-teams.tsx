@@ -219,7 +219,7 @@ export default function BrowseTeamsScreen() {
 
     return (
       <View style={styles.advancedFiltersContainer}>
-        {/* Status Filter */}
+
         <Text style={styles.advancedFilterLabel}>Team Status</Text>
         <View style={styles.pillRow}>
           {(["all", "available", "busy"] as FilterStatus[]).map((status) => (
@@ -243,7 +243,6 @@ export default function BrowseTeamsScreen() {
           ))}
         </View>
 
-        {/* Custom Input Rating Range Filter */}
         <Text style={styles.advancedFilterLabel}>Rating Range</Text>
         <View style={styles.numberInputRow}>
           <TextInput
@@ -267,7 +266,6 @@ export default function BrowseTeamsScreen() {
           />
         </View>
 
-        {/* Custom Input Projects Range Filter */}
         <Text style={styles.advancedFilterLabel}>Total Projects Range</Text>
         <View style={styles.numberInputRow}>
           <TextInput
@@ -291,7 +289,6 @@ export default function BrowseTeamsScreen() {
           />
         </View>
 
-        {/* Technologies / Skills Multi-Select */}
         <Text style={styles.advancedFilterLabel}>Technologies (Must have all)</Text>
         <View style={styles.pillRow}>
           {allAvailableSkills.map((skill) => {

@@ -2,6 +2,14 @@ import { User } from "@/types/user";
 
 export const mockUsers: User[] = [
   {
+    id: "currentUser",
+    fullName: "You",
+    email: "you@university.edu",
+    password: "password123",
+    role: "student",
+    avatar: "https://i.pravatar.cc/150?u=you",
+  },
+  {
     id: "1",
     fullName: "Sarah Chen",
     email: "sarah.chen@university.edu",

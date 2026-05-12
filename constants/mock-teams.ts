@@ -28,6 +28,12 @@ export const mockTeams: Team[] = [
                 messages: [
                     { id: 'm1', userId: '1', content: "Can someone review the new dashboard mockups?", timestamp: '10:00 AM' },
                     { id: 'm2', userId: '2', content: "I'll take a look! 👍", timestamp: '10:05 AM', reactions: [{ emoji: '👍', count: 2 }] },
+                    {
+            id: "m4",
+            userId: "currentUser", // Represents "You"
+            content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ac scelerisque nisi, vel tincidunt leo. Sed euismod malesuada urna eu vestibulum. Morbi mi mauris, cursus sit amet nulla interdum, facilisis viverra lorem. Nulla ultricies eu erat sed tristique. Quisque leo quam, maximus sed odio et, rhoncus faucibus ante. Mauris gravida turpis efficitur volutpat mattis. Morbi consectetur nunc sed ante rutrum mattis. Cras laoreet libero ac lacinia semper. Nulla non nulla lacus. Mauris scelerisque placerat lorem, vel aliquam lectus interdum vitae. Donec non convallis metus, ac viverra lectus.`,
+            timestamp: "10:30 AM",
+          },
                 ] 
             },
             { id: "c3", name: "resources", messages: [] },
@@ -59,8 +65,61 @@ export const mockTeams: Team[] = [
       },
         ],
         directMessages: [
-            { id: 'dm1', otherUserId: '1', unreadCount: 2, messages: [] }, 
-            { id: 'dm2', otherUserId: '2', unreadCount: 0, messages: [] }, 
+            { id: 'dm1', otherUserId: '1', unreadCount: 2, messages: [
+          {
+            id: "dm1_m1",
+            userId: "1",
+            content: "Hey! How's the project going?",
+            timestamp: "9:00 AM",
+          },
+          {
+            id: "dm1_m2",
+            userId: "currentUser",
+            content: "Going well! Just finished the design reviews.",
+            timestamp: "9:05 AM",
+          },
+          {
+            id: "dm1_m3",
+            userId: "1",
+            content:
+              "Awesome! Let me know if you need any help with the implementation.",
+            timestamp: "9:10 AM",
+          },
+        ], }, 
+            { id: "dm2", otherUserId: "2", unreadCount: 0, messages: [] },
+            { id: "dm4", otherUserId: "4", unreadCount: 0, messages: [] },
+      {
+        id: "dm3",
+        otherUserId: "3",
+        unreadCount: 10,
+        messages: [
+          {
+            id: "dm3_m1",
+            userId: "3",
+            content:
+              "Hi! I saw your work on the mobile app. Really impressive!",
+            timestamp: "8:30 AM",
+          },
+          {
+            id: "dm3_m2",
+            userId: "currentUser",
+            content: "Thanks! It was a fun project to work on.",
+            timestamp: "8:35 AM",
+          },
+          {
+            id: "dm3_m3",
+            userId: "3",
+            content:
+              "Would love to collaborate on something similar in the future.",
+            timestamp: "8:40 AM",
+          },
+          {
+            id: "dm3_m4",
+            userId: "currentUser",
+            content: "Definitely! Let's keep in touch.",
+            timestamp: "8:45 AM",
+          },
+        ],}
         ],
         sharedFiles: [
             {
