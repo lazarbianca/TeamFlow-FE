@@ -1,15 +1,28 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { Linking, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const PURPLE = '#4B1363';
 
 export default function LandingScreen() {
   const router = useRouter();
 
+  const handleInfoPress = () => {
+    Linking.openURL('https://docs.google.com/document/d/1aaOJtjRtxo3_qY3EelZrk545upcX5N8EXoNPV0nXdRc/edit?usp=sharing');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        <TouchableOpacity 
+          style={styles.infoButton} 
+          onPress={handleInfoPress}
+          activeOpacity={0.7}
+        >
+          <Feather name="info" size={28} color={PURPLE} />
+        </TouchableOpacity>
+
         <View style={styles.brandBlock}>
           <View style={styles.logoRow}>
             <View style={styles.logoBox}>
@@ -54,7 +67,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  infoButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    padding: 8,
+    zIndex: 10,
+  },
   brandBlock: {
     alignItems: 'center',
     marginBottom: 130,
@@ -64,7 +83,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-
   logoBox: {
     width: 38,
     height: 38,
@@ -80,7 +98,6 @@ const styles = StyleSheet.create({
     color: '#111',
     fontWeight: '700',
   },
-
   brandName: {
     fontSize: 36,
     fontWeight: '700',
@@ -91,7 +108,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#6B6B6B',
   },
-
   actions: {
     width: '100%',
     alignItems: 'center',
@@ -123,4 +139,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-

@@ -34,14 +34,6 @@ export const mockUsers: User[] = [
     avatar: "https://i.pravatar.cc/150?u=jordan",
   },
   {
-    id: "currentUser",
-    fullName: "You",
-    email: "you@university.edu",
-    password: "password123",
-    role: "student",
-    avatar: "https://i.pravatar.cc/150?u=you",
-  },
-  {
     id: "5",
     fullName: "Project Coordinator",
     email: "coordinator@university.edu",
@@ -110,6 +102,14 @@ export const mockUsers: User[] = [
     email: "x",
     password: "y",
     role: "professor",
+    avatar: "https://i.pravatar.cc/150?u=laura",
+  },
+  {
+    id: "14",
+    fullName: "a b",
+    email: "a",
+    password: "b",
+    role: "student",
     avatar: "https://i.pravatar.cc/150?u=laura",
   },
 ];
