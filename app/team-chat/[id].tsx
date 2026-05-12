@@ -10,7 +10,6 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,7 +17,7 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 const PURPLE = "#4B1363";
 
 export default function TeamChatHubScreen() {
