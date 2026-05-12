@@ -5,4 +5,5 @@ export interface SharedFile {
     type: 'pdf' | 'image' | 'doc' | 'code' | 'archive' | 'other';
     uploadedBy: string;
     uploadDate: string;
+    content?: string;
 }
