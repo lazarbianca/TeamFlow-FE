@@ -1,10 +1,11 @@
 import { mockTeams } from "@/constants/mock-teams";
 import { mockUsers } from "@/constants/mock-users";
+import { useAppContext } from "@/context/AppContext";
 import { SharedFile } from "@/types/shared-file";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -19,12 +20,21 @@ import {
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 const PURPLE = "#4B1363";
-
 export default function TeamChatHubScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const team = useMemo(() => mockTeams.find((t) => t.id === id), [id]);
 
-  const [files, setFiles] = useState<SharedFile[]>(team?.sharedFiles || []);
+  // CHANGED: Use Context for Files
+  const { teamFiles, addTeamFile, initializeTeamFiles } = useAppContext();
+
+  // Initialize the files for this team ONLY ONCE when the component mounts
+  useEffect(() => {
+    if (team && id) {
+      initializeTeamFiles(id, team.sharedFiles || []);
+    }
+  }, [team, id]);
+
+  const files = teamFiles[id as string] || []; // Get the active files list from context
   
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadType, setUploadType] = useState<'text' | 'image'>('text');
@@ -36,7 +46,7 @@ export default function TeamChatHubScreen() {
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [selectedFile, setSelectedFile] = useState<SharedFile | null>(null);
 
-  if (!team) {
+  if (!team || !id) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <Text style={{ padding: 20 }}>Team not found.</Text>
@@ -99,9 +109,9 @@ export default function TeamChatHubScreen() {
       imageUri: uploadType === 'image' && newFileImageUri ? newFileImageUri : undefined,
     };
     
-    setFiles([newFile, ...files]);
+    // CHANGED: Save to global context
+    addTeamFile(id, newFile);
     
-    // Reset states
     setUploadModalVisible(false);
     setNewFileName("");
     setNewFileContent("");
@@ -353,6 +363,7 @@ export default function TeamChatHubScreen() {
   );
 }
 
+// ... keep your styles the same ...
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: PURPLE },
   header: { flexDirection: "row", alignItems: "center", backgroundColor: PURPLE, paddingHorizontal: 16, paddingTop: 10, paddingBottom: 20 },
