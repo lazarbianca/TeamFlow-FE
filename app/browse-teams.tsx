@@ -156,10 +156,8 @@ export default function BrowseTeamsScreen() {
   const handleSort = (key: SortKey) => {
     setSortConfig((current) => {
       if (current?.key === key) {
-        return {
-          key,
-          direction: current.direction === "asc" ? "desc" : "asc",
-        };
+        if (current.direction === "asc") return { key, direction: "desc" };
+        return null;
       }
       return { key, direction: "asc" };
     });
@@ -201,6 +199,7 @@ export default function BrowseTeamsScreen() {
       >
         {tabs.map((filter) => {
           const isActive = sortConfig?.key === filter;
+          const direction = isActive ? sortConfig!.direction : "asc";
           return (
             <TouchableOpacity
               key={filter}
@@ -215,7 +214,7 @@ export default function BrowseTeamsScreen() {
               {isActive && (
                 <Feather
                   name={
-                    sortConfig.direction === "asc"
+                    direction === "asc"
                       ? "chevron-up"
                       : "chevron-down"
                   }
