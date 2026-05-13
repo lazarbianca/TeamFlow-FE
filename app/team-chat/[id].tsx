@@ -24,17 +24,15 @@ export default function TeamChatHubScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const team = useMemo(() => mockTeams.find((t) => t.id === id), [id]);
 
-  // CHANGED: Use Context for Files
   const { teamFiles, addTeamFile, initializeTeamFiles } = useAppContext();
 
-  // Initialize the files for this team ONLY ONCE when the component mounts
   useEffect(() => {
     if (team && id) {
       initializeTeamFiles(id, team.sharedFiles || []);
     }
   }, [team, id, initializeTeamFiles]);
 
-  const files = teamFiles[id as string] || []; // Get the active files list from context
+  const files = teamFiles[id as string] || [];
 
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadType, setUploadType] = useState<"text" | "image">("text");
@@ -123,7 +121,6 @@ export default function TeamChatHubScreen() {
         uploadType === "image" && newFileImageUri ? newFileImageUri : undefined,
     };
 
-    // CHANGED: Save to global context
     addTeamFile(id, newFile);
 
     setUploadModalVisible(false);
@@ -466,7 +463,6 @@ export default function TeamChatHubScreen() {
   );
 }
 
-// ... keep your styles the same ...
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: PURPLE },
   header: {

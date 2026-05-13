@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -8,43 +8,39 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import {mockUsers} from "@/constants/mock-users";
+} from "react-native";
+import { useRouter } from "expo-router";
+import { mockUsers } from "@/constants/mock-users";
 
-const PURPLE = '#4B1363';
+const PURPLE = "#4B1363";
 
 export default function LoginScreen() {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const canSubmit = useMemo(() => {
     return email.trim().length > 0 && password.length > 0;
   }, [email, password]);
 
   const onLogin = () => {
-    // TODO: Replace with real API call.
-    const users=mockUsers;
-    let found=false;
-    for(let i=0; i<users.length; i++)
-    {
-        if (users[i].email === email&& users[i].password === password)
-        {
-            router.replace('/workspace');
-            found=true;
-        }
+    const users = mockUsers;
+    let found = false;
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].email === email && users[i].password === password) {
+        router.replace("/workspace");
+        found = true;
+      }
     }
-    if(!found)
-        alert("wrong credentials!")
+    if (!found) alert("wrong credentials!");
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <View style={styles.brandRow}>
           <View style={styles.logoBox}>
@@ -88,7 +84,11 @@ export default function LoginScreen() {
 
         <TouchableOpacity
           activeOpacity={0.85}
-          style={[styles.buttonBase, styles.primaryButton, !canSubmit && styles.buttonDisabled]}
+          style={[
+            styles.buttonBase,
+            styles.primaryButton,
+            !canSubmit && styles.buttonDisabled,
+          ]}
           onPress={onLogin}
           disabled={!canSubmit}
         >
@@ -98,7 +98,7 @@ export default function LoginScreen() {
         <TouchableOpacity
           activeOpacity={0.85}
           style={[styles.buttonBase, styles.secondaryButton]}
-          onPress={() => router.replace('/')}
+          onPress={() => router.replace("/")}
         >
           <Text style={[styles.buttonText, styles.secondaryText]}>Back</Text>
         </TouchableOpacity>
@@ -110,26 +110,26 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   title: {
     color: PURPLE,
     fontSize: 44,
-    fontWeight: '700',
-    textAlign: 'left',
+    fontWeight: "700",
+    textAlign: "left",
     marginBottom: 28,
   },
 
   brandRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 28,
   },
   logoBox: {
@@ -138,23 +138,23 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 2,
     borderColor: PURPLE,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   logoCheck: {
     fontSize: 20,
     lineHeight: 20,
-    color: '#111',
-    fontWeight: '700',
+    color: "#111",
+    fontWeight: "700",
   },
   brandName: {
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: "700",
     color: PURPLE,
   },
   card: {
     borderWidth: 1,
-    borderColor: '#D2D2D2',
+    borderColor: "#D2D2D2",
     borderRadius: 14,
     padding: 18,
   },
@@ -164,33 +164,34 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    color: '#222',
+    color: "#222",
     marginBottom: 10,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#D2D2D2',
+    borderColor: "#D2D2D2",
     borderRadius: 12,
     height: 48,
     paddingHorizontal: 16,
     fontSize: 18,
-    color: '#222',
+    color: "#222",
   },
 
   buttonBase: {
     height: 52,
     borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 14,
   },
   primaryButton: { backgroundColor: PURPLE },
   buttonDisabled: { opacity: 0.55 },
-  primaryText: { color: '#fff' },
-  secondaryButton: { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#222' },
+  primaryText: { color: "#fff" },
+  secondaryButton: {
+    backgroundColor: "#fff",
+    borderWidth: 1.5,
+    borderColor: "#222",
+  },
   secondaryText: { color: PURPLE },
-  buttonText: { fontSize: 18, fontWeight: '600' },
+  buttonText: { fontSize: 18, fontWeight: "600" },
 });
-
-
-

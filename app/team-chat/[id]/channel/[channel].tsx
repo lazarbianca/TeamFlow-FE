@@ -343,7 +343,6 @@ export default function TeamChannelScreen() {
   );
 }
 
-// ... Keep your EXACT styles object from your prompt ...
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: PURPLE },
   header: {
