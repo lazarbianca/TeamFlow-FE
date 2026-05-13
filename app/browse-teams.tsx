@@ -163,6 +163,17 @@ export default function BrowseTeamsScreen() {
     });
   };
 
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setFilterStatus("all");
+    setFilterMinRating("");
+    setFilterMaxRating("");
+    setFilterMinProjects("");
+    setFilterMaxProjects("");
+    setFilterSkills([]);
+    setFilterAchievements([]);
+  };
+
   const toggleSkillFilter = (skill: string) => {
     setFilterSkills((prev) =>
       prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill],
@@ -235,6 +246,14 @@ export default function BrowseTeamsScreen() {
 
     return (
       <View style={styles.advancedFiltersContainer}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.clearFiltersButton}
+          onPress={clearAllFilters}
+        >
+          <Text style={styles.clearFiltersText}>Clear all filters</Text>
+        </TouchableOpacity>
+
         <Text style={styles.advancedFilterLabel}>Team Status</Text>
         <View style={styles.pillRow}>
           {(["all", "available", "busy"] as FilterStatus[]).map((status) => (
@@ -528,6 +547,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
     marginBottom: 10,
+  },
+  clearFiltersButton: {
+    height: 36,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  clearFiltersText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: PURPLE,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   advancedFilterLabel: {
     fontSize: 13,
