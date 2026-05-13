@@ -1,4 +1,3 @@
-// /app/team-chat/[id]/dm/[dm].tsx
 import { mockTeams } from "@/constants/mock-teams";
 import { mockUsers } from "@/constants/mock-users";
 import { useAppContext } from "@/context/AppContext";
@@ -36,16 +35,25 @@ export default function TeamDMScreen() {
     [currentDM],
   );
 
-  const { chatMessages, updateChatMessages, initializeChatMessages, userReactions, toggleUserReaction } = useAppContext();
+  const {
+    chatMessages,
+    updateChatMessages,
+    initializeChatMessages,
+    userReactions,
+    toggleUserReaction,
+  } = useAppContext();
   const chatKey = `${teamId}_${dmId}`;
 
   useEffect(() => {
     if (currentDM) {
-        initializeChatMessages(chatKey, currentDM.messages || []);
+      initializeChatMessages(chatKey, currentDM.messages || []);
     }
-  }, [currentDM, chatKey]);
+  }, [currentDM, chatKey, initializeChatMessages]);
 
-  const messages = chatMessages[chatKey] || [];
+  const messages = useMemo(
+    () => chatMessages[chatKey] || [],
+    [chatMessages, chatKey],
+  );
   const [inputText, setInputText] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
@@ -89,40 +97,42 @@ export default function TeamDMScreen() {
     const hasUserReacted = userReactions.has(messageId);
 
     const updatedMessages = messages.map((msg) => {
-        if (msg.id === messageId) {
-          const existingReaction = msg.reactions?.find((r: any) => r.emoji === "👍");
+      if (msg.id === messageId) {
+        const existingReaction = msg.reactions?.find(
+          (r: any) => r.emoji === "👍",
+        );
 
-          if (hasUserReacted) {
-            if (existingReaction && existingReaction.count > 1) {
-              const newReactions = msg.reactions!.map((r: any) =>
-                r.emoji === "👍" ? { ...r, count: r.count - 1 } : r,
-              );
-              return { ...msg, reactions: newReactions };
-            } else {
-              const newReactions =
-                msg.reactions?.filter((r: any) => r.emoji !== "👍") || [];
-              return {
-                ...msg,
-                reactions: newReactions.length ? newReactions : undefined,
-              };
-            }
+        if (hasUserReacted) {
+          if (existingReaction && existingReaction.count > 1) {
+            const newReactions = msg.reactions!.map((r: any) =>
+              r.emoji === "👍" ? { ...r, count: r.count - 1 } : r,
+            );
+            return { ...msg, reactions: newReactions };
           } else {
-            if (existingReaction) {
-              const newReactions = msg.reactions!.map((r: any) =>
-                r.emoji === "👍" ? { ...r, count: r.count + 1 } : r,
-              );
-              return { ...msg, reactions: newReactions };
-            } else {
-              const newReactions = [
-                ...(msg.reactions || []),
-                { emoji: "👍", count: 1 },
-              ];
-              return { ...msg, reactions: newReactions };
-            }
+            const newReactions =
+              msg.reactions?.filter((r: any) => r.emoji !== "👍") || [];
+            return {
+              ...msg,
+              reactions: newReactions.length ? newReactions : undefined,
+            };
+          }
+        } else {
+          if (existingReaction) {
+            const newReactions = msg.reactions!.map((r: any) =>
+              r.emoji === "👍" ? { ...r, count: r.count + 1 } : r,
+            );
+            return { ...msg, reactions: newReactions };
+          } else {
+            const newReactions = [
+              ...(msg.reactions || []),
+              { emoji: "👍", count: 1 },
+            ];
+            return { ...msg, reactions: newReactions };
           }
         }
-        return msg;
-      });
+      }
+      return msg;
+    });
 
     updateChatMessages(chatKey, updatedMessages);
     toggleUserReaction(messageId);
@@ -131,19 +141,29 @@ export default function TeamDMScreen() {
   return (
     <View style={styles.mainContainer}>
       <Stack.Screen options={{ headerShown: false }} />
-      <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
             <Feather name="chevron-left" size={28} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{otherUser.fullName}</Text>
-          <Image source={{ uri: otherUser.avatar }} style={styles.headerAvatar} />
+          <Image
+            source={{ uri: otherUser.avatar }}
+            style={styles.headerAvatar}
+          />
         </View>
 
-        <ScrollView ref={scrollViewRef} style={styles.body} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.body}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.messagesContainer}>
             {messages.length === 0 ? (
               <View style={styles.emptyStateContainer}>
@@ -154,33 +174,72 @@ export default function TeamDMScreen() {
               </View>
             ) : (
               messages.map((message) => {
-                const sender = mockUsers.find((user) => user.id === message.userId) ??
-                  (message.userId === "currentUser" ? { fullName: "You", avatar: "https://i.pravatar.cc/150?u=you" } : { fullName: "Unknown" });
+                const sender =
+                  mockUsers.find((user) => user.id === message.userId) ??
+                  (message.userId === "currentUser"
+                    ? {
+                        fullName: "You",
+                        avatar: "https://i.pravatar.cc/150?u=you",
+                      }
+                    : { fullName: "Unknown" });
                 const isCurrentUser = message.userId === "currentUser";
 
                 return (
                   <View key={message.id}>
-                    <View style={[styles.messageBubble, isCurrentUser ? styles.messageBubbleRight : styles.messageBubbleLeft]}>
+                    <View
+                      style={[
+                        styles.messageBubble,
+                        isCurrentUser
+                          ? styles.messageBubbleRight
+                          : styles.messageBubbleLeft,
+                      ]}
+                    >
                       <View style={styles.messageTopRow}>
-                        <Text style={styles.messageAuthor}>{sender.fullName}</Text>
-                        <Text style={styles.messageTime}>{message.timestamp}</Text>
+                        <Text style={styles.messageAuthor}>
+                          {sender.fullName}
+                        </Text>
+                        <Text style={styles.messageTime}>
+                          {message.timestamp}
+                        </Text>
                       </View>
-                      <Text style={styles.messageText} numberOfLines={0}>{message.content}</Text>
+                      <Text style={styles.messageText} numberOfLines={0}>
+                        {message.content}
+                      </Text>
                       {message.reactions?.length ? (
                         <View style={styles.reactionsRow}>
                           {message.reactions.map((reaction: any) => (
-                            <View key={reaction.emoji} style={styles.reactionPill}>
-                              <Text style={styles.reactionText}>{reaction.emoji} {reaction.count}</Text>
+                            <View
+                              key={reaction.emoji}
+                              style={styles.reactionPill}
+                            >
+                              <Text style={styles.reactionText}>
+                                {reaction.emoji} {reaction.count}
+                              </Text>
                             </View>
                           ))}
                         </View>
                       ) : null}
                     </View>
                     <TouchableOpacity
-                      style={[styles.reactionButton, isCurrentUser ? styles.reactionButtonRight : styles.reactionButtonLeft, userReactions.has(message.id) && styles.reactionButtonActive]}
+                      style={[
+                        styles.reactionButton,
+                        isCurrentUser
+                          ? styles.reactionButtonRight
+                          : styles.reactionButtonLeft,
+                        userReactions.has(message.id) &&
+                          styles.reactionButtonActive,
+                      ]}
                       onPress={() => handleReaction(message.id)}
                     >
-                      <Text style={[styles.reactionButtonText, userReactions.has(message.id) && styles.reactionButtonTextActive]}>👍</Text>
+                      <Text
+                        style={[
+                          styles.reactionButtonText,
+                          userReactions.has(message.id) &&
+                            styles.reactionButtonTextActive,
+                        ]}
+                      >
+                        👍
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 );
@@ -189,7 +248,12 @@ export default function TeamDMScreen() {
           </View>
         </ScrollView>
 
-        <View style={[styles.composerBar, { paddingBottom: Math.max(insets.bottom, 14) }]}>
+        <View
+          style={[
+            styles.composerBar,
+            { paddingBottom: Math.max(insets.bottom, 14) },
+          ]}
+        >
           <TextInput
             style={styles.composerInput}
             placeholder={`Message ${otherUser.fullName}`}
@@ -206,7 +270,10 @@ export default function TeamDMScreen() {
             blurOnSubmit={false}
           />
           <TouchableOpacity
-            style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
+            style={[
+              styles.sendButton,
+              !inputText.trim() && styles.sendButtonDisabled,
+            ]}
             onPress={handleSendMessage}
             disabled={!inputText.trim()}
           >
@@ -218,42 +285,148 @@ export default function TeamDMScreen() {
   );
 }
 
-// ... Keep your EXACT styles object from your prompt ...
 const styles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: PURPLE },
-  header: { flexDirection: "row", alignItems: "center", backgroundColor: PURPLE, paddingHorizontal: 16, paddingBottom: 20 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: PURPLE,
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
   backButton: { marginRight: 12 },
-  headerTitle: { flex: 1, fontSize: 28, fontWeight: "600", color: "#fff", fontFamily: "serif" },
-  headerAvatar: { width: 44, height: 44, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.2)" },
+  headerTitle: {
+    flex: 1,
+    fontSize: 28,
+    fontWeight: "600",
+    color: "#fff",
+    fontFamily: "serif",
+  },
+  headerAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
   body: { flex: 1, backgroundColor: "#fff" },
   messagesContainer: { padding: 20, paddingBottom: 24 },
-  messageBubble: { borderRadius: 18, padding: 16, marginBottom: 14, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 1 },
+  messageBubble: {
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 1,
+  },
   messageBubbleLeft: { alignSelf: "flex-start", backgroundColor: "#F3F4F6" },
   messageBubbleRight: { alignSelf: "flex-end", backgroundColor: "#E9D5FF" },
-  messageTopRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
+  messageTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
   messageAuthor: { fontWeight: "700", color: "#111827" },
   messageTime: { fontSize: 12, color: "#6B7280" },
   messageText: { fontSize: 15, color: "#374151", lineHeight: 22 },
-  announcementCard: { backgroundColor: "#fff", borderRadius: 24, padding: 18, marginBottom: 16, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 2 },
-  announcementHeader: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
-  avatarWrapper: { width: 42, height: 42, borderRadius: 14, backgroundColor: "#F3F4F6", justifyContent: "center", alignItems: "center", marginRight: 12 },
+  announcementCard: {
+    backgroundColor: "#fff",
+    borderRadius: 24,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  announcementHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  avatarWrapper: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: "#F3F4F6",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
   announcementAvatar: { width: 40, height: 40, borderRadius: 12 },
   announcementMeta: { flex: 1 },
-  announcementText: { fontSize: 16, lineHeight: 24, color: "#111827", marginBottom: 12 },
-  reactionsRow: { flexDirection: "row", gap: 8, flexWrap: "wrap", marginTop: 12 },
-  reactionPill: { backgroundColor: "#F3F4F6", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 6 },
+  announcementText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#111827",
+    marginBottom: 12,
+  },
+  reactionsRow: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap",
+    marginTop: 12,
+  },
+  reactionPill: {
+    backgroundColor: "#F3F4F6",
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
   reactionText: { color: "#374151", fontSize: 13 },
-  composerBar: { flexDirection: "row", alignItems: "center", padding: 14, backgroundColor: "#fff", borderTopWidth: 1, borderColor: "#E5E7EB" },
-  composerInput: { flex: 1, borderRadius: 999, backgroundColor: "#F9FAFB", paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: "#374151", maxHeight: 100 },
-  sendButton: { marginLeft: 12, backgroundColor: PURPLE, width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
+  composerBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 14,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  composerInput: {
+    flex: 1,
+    borderRadius: 999,
+    backgroundColor: "#F9FAFB",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: "#374151",
+    maxHeight: 100,
+  },
+  sendButton: {
+    marginLeft: 12,
+    backgroundColor: PURPLE,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   sendButtonDisabled: { backgroundColor: "#D1D5DB" },
-  reactionButton: { marginBottom: 8, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: "#F3F4F6", borderRadius: 12 },
+  reactionButton: {
+    marginBottom: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: "#F3F4F6",
+    borderRadius: 12,
+  },
   reactionButtonLeft: { alignSelf: "flex-start", marginLeft: 16 },
   reactionButtonRight: { alignSelf: "flex-end", marginRight: 16 },
   reactionButtonText: { fontSize: 14, color: "#6B7280" },
   reactionButtonActive: { backgroundColor: PURPLE },
   reactionButtonTextActive: { color: "#fff" },
   emptyStateContainer: { padding: 28, alignItems: "center" },
-  emptyStateTitle: { fontSize: 18, fontWeight: "700", color: "#111827", marginBottom: 8 },
-  emptyStateText: { fontSize: 14, color: "#6B7280", textAlign: "center", lineHeight: 20 },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111827",
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: "#6B7280",
+    textAlign: "center",
+    lineHeight: 20,
+  },
 });

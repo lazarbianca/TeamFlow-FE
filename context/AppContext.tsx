@@ -13,7 +13,6 @@ interface AppContextType {
   updateChatMessages: (chatKey: string, newMessages: any[]) => void;
   initializeChatMessages: (chatKey: string, defaultMessages: any[]) => void;
 
-  // NEW: Global User Reactions tracking
   userReactions: Set<string>;
   toggleUserReaction: (messageId: string) => void;
 }
@@ -25,7 +24,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [teamFiles, setTeamFiles] = useState<Record<string, SharedFile[]>>({});
   const [chatMessages, setChatMessages] = useState<Record<string, any[]>>({});
   
-  // NEW: Store reactions globally
   const [userReactions, setUserReactions] = useState<Set<string>>(new Set());
 
   const addRequestedTeam = (teamId: string) => {
@@ -64,7 +62,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  // NEW: Toggle function
   const toggleUserReaction = (messageId: string) => {
     setUserReactions((prev) => {
       const newSet = new Set(prev);
@@ -83,7 +80,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         requestedTeams, addRequestedTeam, 
         teamFiles, addTeamFile, initializeTeamFiles,
         chatMessages, updateChatMessages, initializeChatMessages,
-        userReactions, toggleUserReaction // <--- Exported here
+        userReactions, toggleUserReaction
       }}
     >
       {children}

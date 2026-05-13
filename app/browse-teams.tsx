@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 const PURPLE = "#4B1363";
 
 type SortKey = "Domain" | "Members" | "Technology" | "Projects" | "Skills";
@@ -33,24 +33,28 @@ export default function BrowseTeamsScreen() {
   const [filterMaxRating, setFilterMaxRating] = useState<string>("");
   const [filterMinProjects, setFilterMinProjects] = useState<string>("");
   const [filterMaxProjects, setFilterMaxProjects] = useState<string>("");
-  const [filterSkills, setFilterSkills] = useState<string[]>([]); 
+  const [filterSkills, setFilterSkills] = useState<string[]>([]);
   const [filterAchievements, setFilterAchievements] = useState<string[]>([]);
 
   const allAvailableSkills = useMemo(() => {
     const skillsSet = new Set<string>();
-    mockTeams.forEach((team) => team.skills.forEach((skill) => skillsSet.add(skill)));
+    mockTeams.forEach((team) =>
+      team.skills.forEach((skill) => skillsSet.add(skill)),
+    );
     return Array.from(skillsSet).sort();
   }, []);
 
   const allAvailableAchievements = useMemo(() => {
     const achSet = new Set<string>();
-    mockTeams.forEach((team) => team.achievements.forEach((a) => achSet.add(a.title)));
+    mockTeams.forEach((team) =>
+      team.achievements.forEach((a) => achSet.add(a.title)),
+    );
     return Array.from(achSet).sort();
   }, []);
 
   const processedTeams = useMemo(() => {
     let result = mockTeams.filter(
-      (team) => !team.members.includes(currentUser.id)
+      (team) => !team.members.includes(currentUser.id),
     );
 
     if (filterStatus !== "all") {
@@ -77,15 +81,17 @@ export default function BrowseTeamsScreen() {
 
     if (filterSkills.length > 0) {
       result = result.filter((team) =>
-        filterSkills.every((selectedSkill) => team.skills.includes(selectedSkill))
+        filterSkills.every((selectedSkill) =>
+          team.skills.includes(selectedSkill),
+        ),
       );
     }
 
     if (filterAchievements.length > 0) {
       result = result.filter((team) =>
-        filterAchievements.every((selectedAch) => 
-          team.achievements.some(a => a.title === selectedAch)
-        )
+        filterAchievements.every((selectedAch) =>
+          team.achievements.some((a) => a.title === selectedAch),
+        ),
       );
     }
 
@@ -95,7 +101,7 @@ export default function BrowseTeamsScreen() {
         (team) =>
           team.name.toLowerCase().includes(query) ||
           team.tags.some((tag) => tag.toLowerCase().includes(query)) ||
-          team.skills.some((skill) => skill.toLowerCase().includes(query))
+          team.skills.some((skill) => skill.toLowerCase().includes(query)),
       );
     }
 
@@ -161,13 +167,15 @@ export default function BrowseTeamsScreen() {
 
   const toggleSkillFilter = (skill: string) => {
     setFilterSkills((prev) =>
-      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
+      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill],
     );
   };
 
   const toggleAchievementFilter = (achievement: string) => {
     setFilterAchievements((prev) =>
-      prev.includes(achievement) ? prev.filter((a) => a !== achievement) : [...prev, achievement]
+      prev.includes(achievement)
+        ? prev.filter((a) => a !== achievement)
+        : [...prev, achievement],
     );
   };
 
@@ -176,7 +184,13 @@ export default function BrowseTeamsScreen() {
   };
 
   const renderSortTabs = () => {
-    const tabs: SortKey[] = ["Domain", "Members", "Technology", "Projects", "Skills"];
+    const tabs: SortKey[] = [
+      "Domain",
+      "Members",
+      "Technology",
+      "Projects",
+      "Skills",
+    ];
 
     return (
       <ScrollView
@@ -200,7 +214,11 @@ export default function BrowseTeamsScreen() {
               </Text>
               {isActive && (
                 <Feather
-                  name={sortConfig.direction === "asc" ? "chevron-up" : "chevron-down"}
+                  name={
+                    sortConfig.direction === "asc"
+                      ? "chevron-up"
+                      : "chevron-down"
+                  }
                   size={14}
                   color="#fff"
                   style={styles.sortIcon}
@@ -218,7 +236,6 @@ export default function BrowseTeamsScreen() {
 
     return (
       <View style={styles.advancedFiltersContainer}>
-
         <Text style={styles.advancedFilterLabel}>Team Status</Text>
         <View style={styles.pillRow}>
           {(["all", "available", "busy"] as FilterStatus[]).map((status) => (
@@ -288,7 +305,9 @@ export default function BrowseTeamsScreen() {
           />
         </View>
 
-        <Text style={styles.advancedFilterLabel}>Technologies (Must have all)</Text>
+        <Text style={styles.advancedFilterLabel}>
+          Technologies (Must have all)
+        </Text>
         <View style={styles.pillRow}>
           {allAvailableSkills.map((skill) => {
             const isSelected = filterSkills.includes(skill);
@@ -299,10 +318,7 @@ export default function BrowseTeamsScreen() {
                 onPress={() => toggleSkillFilter(skill)}
               >
                 <Text
-                  style={[
-                    styles.pillText,
-                    isSelected && styles.pillTextActive,
-                  ]}
+                  style={[styles.pillText, isSelected && styles.pillTextActive]}
                 >
                   {skill}
                 </Text>
@@ -311,8 +327,9 @@ export default function BrowseTeamsScreen() {
           })}
         </View>
 
-        {/* Achievements Multi-Select */}
-        <Text style={styles.advancedFilterLabel}>Achievements (Must have all)</Text>
+        <Text style={styles.advancedFilterLabel}>
+          Achievements (Must have all)
+        </Text>
         <View style={styles.pillRow}>
           {allAvailableAchievements.map((ach) => {
             const isSelected = filterAchievements.includes(ach);
@@ -322,17 +339,14 @@ export default function BrowseTeamsScreen() {
                 style={[styles.pill, isSelected && styles.pillActive]}
                 onPress={() => toggleAchievementFilter(ach)}
               >
-                <Feather 
-                  name="award" 
-                  size={12} 
-                  color={isSelected ? "#fff" : "#6B7280"} 
-                  style={{ marginRight: 4 }} 
+                <Feather
+                  name="award"
+                  size={12}
+                  color={isSelected ? "#fff" : "#6B7280"}
+                  style={{ marginRight: 4 }}
                 />
                 <Text
-                  style={[
-                    styles.pillText,
-                    isSelected && styles.pillTextActive,
-                  ]}
+                  style={[styles.pillText, isSelected && styles.pillTextActive]}
                 >
                   {ach}
                 </Text>
@@ -403,12 +417,12 @@ export default function BrowseTeamsScreen() {
             <Feather name="search" size={20} color="#9CA3AF" />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search teams, tags, or skills..."
+              placeholder="Search..." 
               placeholderTextColor="#9CA3AF"
               value={searchQuery}
               onChangeText={setSearchQuery}
               autoCorrect={false}
-              multiline={false} 
+              multiline={false}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity onPress={() => setSearchQuery("")}>
@@ -416,17 +430,27 @@ export default function BrowseTeamsScreen() {
               </TouchableOpacity>
             )}
           </View>
-          
-          <TouchableOpacity 
-            style={[styles.filterToggleButton, showAdvancedFilters && styles.filterToggleButtonActive]} 
+
+          <TouchableOpacity
+            style={[
+              styles.filterToggleButton,
+              showAdvancedFilters && styles.filterToggleButtonActive,
+            ]}
             onPress={() => setShowAdvancedFilters(!showAdvancedFilters)}
           >
-            <Feather name="sliders" size={20} color={showAdvancedFilters ? "#fff" : PURPLE} />
+            <Feather
+              name="sliders"
+              size={20}
+              color={showAdvancedFilters ? "#fff" : PURPLE}
+            />
           </TouchableOpacity>
         </View>
-        
+
         {showAdvancedFilters && (
-          <ScrollView style={{ maxHeight: 350 }} showsVerticalScrollIndicator={true}>
+          <ScrollView
+            style={{ maxHeight: 350 }}
+            showsVerticalScrollIndicator={true}
+          >
             {renderAdvancedFilters()}
           </ScrollView>
         )}
@@ -441,7 +465,9 @@ export default function BrowseTeamsScreen() {
         contentContainerStyle={styles.listContent}
         scrollEnabled={true}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No teams match your current filters.</Text>
+          <Text style={styles.emptyText}>
+            No teams match your current filters.
+          </Text>
         }
       />
     </SafeAreaView>
@@ -476,7 +502,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 14,
     height: 44,
-    overflow: "hidden", 
+    overflow: "hidden",
   },
   searchInput: {
     flex: 1,
@@ -563,19 +589,25 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
   },
   filterContainer: {
+    minHeight: 50, 
     marginVertical: 16,
     flexGrow: 0,
+    flexShrink: 0,
   },
   filterContent: {
     paddingHorizontal: 20, 
     gap: 8,
+    paddingRight: 32,
+    alignItems: 'center',
+    justifyContent: 'center', 
   },
   filterTab: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    height: 36, 
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: "#D1D5DB",
     backgroundColor: "#F9FAFB",

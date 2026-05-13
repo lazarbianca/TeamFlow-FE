@@ -16,28 +16,26 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 const PURPLE = "#4B1363";
 export default function TeamChatHubScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const team = useMemo(() => mockTeams.find((t) => t.id === id), [id]);
 
-  // CHANGED: Use Context for Files
   const { teamFiles, addTeamFile, initializeTeamFiles } = useAppContext();
 
-  // Initialize the files for this team ONLY ONCE when the component mounts
   useEffect(() => {
     if (team && id) {
       initializeTeamFiles(id, team.sharedFiles || []);
     }
-  }, [team, id]);
+  }, [team, id, initializeTeamFiles]);
 
-  const files = teamFiles[id as string] || []; // Get the active files list from context
-  
+  const files = teamFiles[id as string] || [];
+
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
-  const [uploadType, setUploadType] = useState<'text' | 'image'>('text');
+  const [uploadType, setUploadType] = useState<"text" | "image">("text");
   const [newFileName, setNewFileName] = useState("");
   const [newFileContent, setNewFileContent] = useState("");
   const [newFileImageUri, setNewFileImageUri] = useState<string | null>(null);
@@ -56,11 +54,16 @@ export default function TeamChatHubScreen() {
 
   const getFileIcon = (type: string) => {
     switch (type) {
-      case 'pdf': return 'file-text';
-      case 'image': return 'image';
-      case 'archive': return 'archive';
-      case 'code': return 'code';
-      default: return 'file';
+      case "pdf":
+        return "file-text";
+      case "image":
+        return "image";
+      case "archive":
+        return "archive";
+      case "code":
+        return "code";
+      default:
+        return "file";
     }
   };
 
@@ -72,10 +75,10 @@ export default function TeamChatHubScreen() {
   const handleMockPickImage = () => {
     setIsPickingImage(true);
     setTimeout(() => {
-        const randomId = Math.floor(Math.random() * 100) + 1;
-        setNewFileImageUri(`https://picsum.photos/id/${randomId}/800/600`);
-        setNewFileName(`screenshot_${Date.now()}.png`);
-        setIsPickingImage(false);
+      const randomId = Math.floor(Math.random() * 100) + 1;
+      setNewFileImageUri(`https://picsum.photos/id/${randomId}/800/600`);
+      setNewFileName(`screenshot_${Date.now()}.png`);
+      setIsPickingImage(false);
     }, 800);
   };
 
@@ -83,19 +86,23 @@ export default function TeamChatHubScreen() {
     if (!newFileName.trim()) return;
 
     let finalName = newFileName.trim();
-    let fileType: SharedFile['type'] = 'doc';
-    let fakeSize = '0 B';
+    let fileType: SharedFile["type"] = "doc";
+    let fakeSize = "0 B";
 
-    if (uploadType === 'text') {
-        finalName = finalName.includes('.') ? finalName : `${finalName}.txt`;
-        fileType = finalName.endsWith('.tsx') || finalName.endsWith('.js') ? 'code' : 'doc';
-        fakeSize = newFileContent.length > 1024 
-            ? `${(newFileContent.length / 1024).toFixed(1)} KB` 
-            : `${newFileContent.length} B`;
+    if (uploadType === "text") {
+      finalName = finalName.includes(".") ? finalName : `${finalName}.txt`;
+      fileType =
+        finalName.endsWith(".tsx") || finalName.endsWith(".js")
+          ? "code"
+          : "doc";
+      fakeSize =
+        newFileContent.length > 1024
+          ? `${(newFileContent.length / 1024).toFixed(1)} KB`
+          : `${newFileContent.length} B`;
     } else {
-        finalName = finalName.includes('.') ? finalName : `${finalName}.png`;
-        fileType = 'image';
-        fakeSize = `${(Math.random() * 4 + 1).toFixed(1)} MB`;
+      finalName = finalName.includes(".") ? finalName : `${finalName}.png`;
+      fileType = "image";
+      fakeSize = `${(Math.random() * 4 + 1).toFixed(1)} MB`;
     }
 
     const newFile: SharedFile = {
@@ -103,20 +110,24 @@ export default function TeamChatHubScreen() {
       name: finalName,
       size: fakeSize,
       type: fileType,
-      uploadedBy: 'currentUser',
-      uploadDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      content: uploadType === 'text' ? newFileContent : undefined,
-      imageUri: uploadType === 'image' && newFileImageUri ? newFileImageUri : undefined,
+      uploadedBy: "currentUser",
+      uploadDate: new Date().toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      content: uploadType === "text" ? newFileContent : undefined,
+      imageUri:
+        uploadType === "image" && newFileImageUri ? newFileImageUri : undefined,
     };
-    
-    // CHANGED: Save to global context
+
     addTeamFile(id, newFile);
-    
+
     setUploadModalVisible(false);
     setNewFileName("");
     setNewFileContent("");
     setNewFileImageUri(null);
-    setUploadType('text');
+    setUploadType("text");
   };
 
   return (
@@ -124,7 +135,10 @@ export default function TeamChatHubScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
           <Feather name="chevron-left" size={28} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{team.name}</Text>
@@ -132,7 +146,6 @@ export default function TeamChatHubScreen() {
       </View>
 
       <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
-        
         {/* CHANNELS SECTION */}
         <Text style={styles.sectionTitle}>CHANNELS</Text>
         <View style={styles.listContainer}>
@@ -140,7 +153,9 @@ export default function TeamChatHubScreen() {
             <TouchableOpacity
               key={channel.id}
               style={styles.channelRow}
-              onPress={() => router.push(`/team-chat/${id}/channel/${channel.name}`)}
+              onPress={() =>
+                router.push(`/team-chat/${id}/channel/${channel.name}`)
+              }
             >
               <Text style={styles.channelName}>#{channel.name}</Text>
               <Feather name="chevron-right" size={18} color="#9CA3AF" />
@@ -152,7 +167,9 @@ export default function TeamChatHubScreen() {
         </View>
 
         {/* DIRECT MESSAGES SECTION */}
-        <Text style={[styles.sectionTitle, { marginTop: 32 }]}>DIRECT MESSAGES</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 32 }]}>
+          DIRECT MESSAGES
+        </Text>
         <View style={styles.listContainer}>
           {team.directMessages?.map((dm) => {
             const user = mockUsers.find((u) => u.id === dm.otherUserId);
@@ -166,7 +183,10 @@ export default function TeamChatHubScreen() {
               >
                 <View style={styles.dmUserInfo}>
                   {user.avatar ? (
-                    <Image source={{ uri: user.avatar }} style={styles.userAvatar} />
+                    <Image
+                      source={{ uri: user.avatar }}
+                      style={styles.userAvatar}
+                    />
                   ) : (
                     <View style={styles.placeholderAvatar}>
                       <Feather name="user" size={18} color={PURPLE} />
@@ -190,15 +210,19 @@ export default function TeamChatHubScreen() {
 
         {/* SHARED FILES SECTION */}
         <View style={styles.sectionHeaderRow}>
-            <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>SHARED FILES</Text>
-            <TouchableOpacity onPress={() => setUploadModalVisible(true)}>
-                <Text style={styles.addFileText}>+ Upload</Text>
-            </TouchableOpacity>
+          <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>
+            SHARED FILES
+          </Text>
+          <TouchableOpacity onPress={() => setUploadModalVisible(true)}>
+            <Text style={styles.addFileText}>+ Upload</Text>
+          </TouchableOpacity>
         </View>
-        
+
         <View style={[styles.listContainer, { marginBottom: 40 }]}>
           {files.map((file) => {
-            const uploader = mockUsers.find(u => u.id === file.uploadedBy) || { fullName: 'You' };
+            const uploader = mockUsers.find(
+              (u) => u.id === file.uploadedBy,
+            ) || { fullName: "You" };
             return (
               <TouchableOpacity
                 key={file.id}
@@ -206,11 +230,19 @@ export default function TeamChatHubScreen() {
                 onPress={() => handleOpenFile(file)}
               >
                 <View style={styles.fileIconWrapper}>
-                    <Feather name={getFileIcon(file.type) as any} size={20} color={PURPLE} />
+                  <Feather
+                    name={getFileIcon(file.type) as any}
+                    size={20}
+                    color={PURPLE}
+                  />
                 </View>
                 <View style={styles.fileInfo}>
-                    <Text style={styles.fileName} numberOfLines={1}>{file.name}</Text>
-                    <Text style={styles.fileMeta}>{file.size} • Uploaded by {uploader.fullName}</Text>
+                  <Text style={styles.fileName} numberOfLines={1}>
+                    {file.name}
+                  </Text>
+                  <Text style={styles.fileMeta}>
+                    {file.size} • Uploaded by {uploader.fullName}
+                  </Text>
                 </View>
                 <Feather name="download" size={18} color="#9CA3AF" />
               </TouchableOpacity>
@@ -222,210 +254,487 @@ export default function TeamChatHubScreen() {
         </View>
       </ScrollView>
 
-      <Modal visible={uploadModalVisible} animationType="slide" transparent={true}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Upload New File</Text>
-                  
-                  <View style={styles.uploadTypeToggle}>
-                      <TouchableOpacity 
-                          style={[styles.toggleBtn, uploadType === 'text' && styles.toggleBtnActive]}
-                          onPress={() => setUploadType('text')}
-                      >
-                          <Feather name="align-left" size={16} color={uploadType === 'text' ? '#fff' : '#6B7280'} />
-                          <Text style={[styles.toggleBtnText, uploadType === 'text' && styles.toggleBtnTextActive]}>Text</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity 
-                          style={[styles.toggleBtn, uploadType === 'image' && styles.toggleBtnActive]}
-                          onPress={() => setUploadType('image')}
-                      >
-                          <Feather name="image" size={16} color={uploadType === 'image' ? '#fff' : '#6B7280'} />
-                          <Text style={[styles.toggleBtnText, uploadType === 'image' && styles.toggleBtnTextActive]}>Image</Text>
-                      </TouchableOpacity>
+      <Modal
+        visible={uploadModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Upload New File</Text>
+
+            <View style={styles.uploadTypeToggle}>
+              <TouchableOpacity
+                style={[
+                  styles.toggleBtn,
+                  uploadType === "text" && styles.toggleBtnActive,
+                ]}
+                onPress={() => setUploadType("text")}
+              >
+                <Feather
+                  name="align-left"
+                  size={16}
+                  color={uploadType === "text" ? "#fff" : "#6B7280"}
+                />
+                <Text
+                  style={[
+                    styles.toggleBtnText,
+                    uploadType === "text" && styles.toggleBtnTextActive,
+                  ]}
+                >
+                  Text
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.toggleBtn,
+                  uploadType === "image" && styles.toggleBtnActive,
+                ]}
+                onPress={() => setUploadType("image")}
+              >
+                <Feather
+                  name="image"
+                  size={16}
+                  color={uploadType === "image" ? "#fff" : "#6B7280"}
+                />
+                <Text
+                  style={[
+                    styles.toggleBtnText,
+                    uploadType === "image" && styles.toggleBtnTextActive,
+                  ]}
+                >
+                  Image
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.inputLabel}>File Name</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder={
+                uploadType === "text"
+                  ? "e.g. project_notes.txt"
+                  : "e.g. screenshot.png"
+              }
+              value={newFileName}
+              onChangeText={setNewFileName}
+              placeholderTextColor="#9CA3AF"
+            />
+
+            {uploadType === "text" ? (
+              <>
+                <Text style={styles.inputLabel}>File Content</Text>
+                <TextInput
+                  style={[styles.textInput, styles.textArea]}
+                  placeholder="Type or paste your file content here..."
+                  value={newFileContent}
+                  onChangeText={setNewFileContent}
+                  multiline={true}
+                  textAlignVertical="top"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </>
+            ) : (
+              <>
+                <Text style={styles.inputLabel}>Image Source</Text>
+                {newFileImageUri ? (
+                  <View style={styles.imagePreviewContainer}>
+                    <Image
+                      source={{ uri: newFileImageUri }}
+                      style={styles.imagePreview}
+                      contentFit="cover"
+                    />
+                    <TouchableOpacity
+                      style={styles.removeImageBtn}
+                      onPress={() => setNewFileImageUri(null)}
+                    >
+                      <Feather name="x" size={16} color="#fff" />
+                    </TouchableOpacity>
                   </View>
-
-                  <Text style={styles.inputLabel}>File Name</Text>
-                  <TextInput 
-                      style={styles.textInput} 
-                      placeholder={uploadType === 'text' ? "e.g. project_notes.txt" : "e.g. screenshot.png"}
-                      value={newFileName}
-                      onChangeText={setNewFileName}
-                      placeholderTextColor="#9CA3AF"
-                  />
-
-                  {uploadType === 'text' ? (
+                ) : (
+                  <TouchableOpacity
+                    style={styles.mockPickImageBtn}
+                    onPress={handleMockPickImage}
+                  >
+                    {isPickingImage ? (
+                      <ActivityIndicator size="small" color={PURPLE} />
+                    ) : (
                       <>
-                        <Text style={styles.inputLabel}>File Content</Text>
-                        <TextInput 
-                            style={[styles.textInput, styles.textArea]} 
-                            placeholder="Type or paste your file content here..."
-                            value={newFileContent}
-                            onChangeText={setNewFileContent}
-                            multiline={true}
-                            textAlignVertical="top"
-                            placeholderTextColor="#9CA3AF"
-                        />
+                        <Feather name="upload-cloud" size={20} color={PURPLE} />
+                        <Text style={styles.mockPickImageText}>
+                          Tap to Select Image
+                        </Text>
                       </>
-                  ) : (
-                      <>
-                        <Text style={styles.inputLabel}>Image Source</Text>
-                        {newFileImageUri ? (
-                            <View style={styles.imagePreviewContainer}>
-                                <Image source={{ uri: newFileImageUri }} style={styles.imagePreview} contentFit="cover" />
-                                <TouchableOpacity style={styles.removeImageBtn} onPress={() => setNewFileImageUri(null)}>
-                                    <Feather name="x" size={16} color="#fff" />
-                                </TouchableOpacity>
-                            </View>
-                        ) : (
-                            <TouchableOpacity style={styles.mockPickImageBtn} onPress={handleMockPickImage}>
-                                {isPickingImage ? (
-                                    <ActivityIndicator size="small" color={PURPLE} />
-                                ) : (
-                                    <>
-                                        <Feather name="upload-cloud" size={20} color={PURPLE} />
-                                        <Text style={styles.mockPickImageText}>Tap to Select Image</Text>
-                                    </>
-                                )}
-                            </TouchableOpacity>
-                        )}
-                      </>
-                  )}
+                    )}
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
 
-                  <View style={styles.modalButtonRow}>
-                      <TouchableOpacity 
-                          style={[styles.modalBtn, styles.modalBtnCancel]} 
-                          onPress={() => setUploadModalVisible(false)}
-                      >
-                          <Text style={styles.btnCancelText}>Cancel</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity 
-                          style={[
-                              styles.modalBtn, 
-                              styles.modalBtnSubmit, 
-                              (!newFileName.trim() || (uploadType === 'image' && !newFileImageUri)) && { opacity: 0.5 }
-                          ]} 
-                          onPress={handleCreateFile}
-                          disabled={!newFileName.trim() || (uploadType === 'image' && !newFileImageUri)}
-                      >
-                          <Text style={styles.btnSubmitText}>Upload File</Text>
-                      </TouchableOpacity>
-                  </View>
-              </View>
-          </KeyboardAvoidingView>
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalBtnCancel]}
+                onPress={() => setUploadModalVisible(false)}
+              >
+                <Text style={styles.btnCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.modalBtn,
+                  styles.modalBtnSubmit,
+                  (!newFileName.trim() ||
+                    (uploadType === "image" && !newFileImageUri)) && {
+                    opacity: 0.5,
+                  },
+                ]}
+                onPress={handleCreateFile}
+                disabled={
+                  !newFileName.trim() ||
+                  (uploadType === "image" && !newFileImageUri)
+                }
+              >
+                <Text style={styles.btnSubmitText}>Upload File</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* --- VIEW FILE MODAL --- */}
       <Modal visible={viewModalVisible} animationType="fade" transparent={true}>
-          <View style={styles.modalOverlay}>
-              <View style={styles.modalContentLarge}>
-                  {selectedFile && (
-                      <>
-                        <View style={styles.viewFileHeader}>
-                            <View style={styles.fileIconWrapperLarge}>
-                                <Feather name={getFileIcon(selectedFile.type) as any} size={24} color={PURPLE} />
-                            </View>
-                            <View style={{ flex: 1 }}>
-                                <Text style={styles.viewFileName} numberOfLines={1}>{selectedFile.name}</Text>
-                                <Text style={styles.viewFileMeta}>{selectedFile.size} • Uploaded {selectedFile.uploadDate}</Text>
-                            </View>
-                            <TouchableOpacity onPress={() => setViewModalVisible(false)} style={styles.closeIconBtn}>
-                                <Feather name="x" size={24} color="#6B7280" />
-                            </TouchableOpacity>
-                        </View>
-                        
-                        {/* Render Image OR Text Content */}
-                        {selectedFile.type === 'image' && selectedFile.imageUri ? (
-                            <View style={styles.imageViewerContainer}>
-                                <Image 
-                                    source={{ uri: selectedFile.imageUri }} 
-                                    style={styles.fullImage} 
-                                    contentFit="contain" 
-                                />
-                            </View>
-                        ) : (
-                            <ScrollView 
-                                style={styles.fileContentScroll} 
-                                contentContainerStyle={styles.fileContentInner}
-                                showsVerticalScrollIndicator={true}
-                            >
-                                <Text style={styles.fileContentText}>
-                                    {selectedFile.content || "This file has no text content to display."}
-                                </Text>
-                            </ScrollView>
-                        )}
-                      </>
-                  )}
-              </View>
-          </View>
-      </Modal>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContentLarge}>
+            {selectedFile && (
+              <>
+                <View style={styles.viewFileHeader}>
+                  <View style={styles.fileIconWrapperLarge}>
+                    <Feather
+                      name={getFileIcon(selectedFile.type) as any}
+                      size={24}
+                      color={PURPLE}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.viewFileName} numberOfLines={1}>
+                      {selectedFile.name}
+                    </Text>
+                    <Text style={styles.viewFileMeta}>
+                      {selectedFile.size} • Uploaded {selectedFile.uploadDate}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setViewModalVisible(false)}
+                    style={styles.closeIconBtn}
+                  >
+                    <Feather name="x" size={24} color="#6B7280" />
+                  </TouchableOpacity>
+                </View>
 
+                {/* Render Image OR Text Content */}
+                {selectedFile.type === "image" && selectedFile.imageUri ? (
+                  <View style={styles.imageViewerContainer}>
+                    <Image
+                      source={{ uri: selectedFile.imageUri }}
+                      style={styles.fullImage}
+                      contentFit="contain"
+                    />
+                  </View>
+                ) : (
+                  <ScrollView
+                    style={styles.fileContentScroll}
+                    contentContainerStyle={styles.fileContentInner}
+                    showsVerticalScrollIndicator={true}
+                  >
+                    <Text style={styles.fileContentText}>
+                      {selectedFile.content ||
+                        "This file has no text content to display."}
+                    </Text>
+                  </ScrollView>
+                )}
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
-// ... keep your styles the same ...
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: PURPLE },
-  header: { flexDirection: "row", alignItems: "center", backgroundColor: PURPLE, paddingHorizontal: 16, paddingTop: 10, paddingBottom: 20 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: PURPLE,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
   backButton: { marginRight: 12 },
-  headerTitle: { flex: 1, fontSize: 28, fontWeight: "600", color: "#fff", fontFamily: "serif" },
-  headerAvatar: { width: 44, height: 44, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.2)" },
-  body: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 20, paddingTop: 24 },
-  sectionTitle: { fontSize: 14, fontWeight: "700", color: "#9CA3AF", marginBottom: 12, letterSpacing: 0.5 },
-  sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 32, marginBottom: 12 },
-  addFileText: { fontSize: 14, fontWeight: '700', color: PURPLE },
-  listContainer: { backgroundColor: "#FCFAFF", borderRadius: 12, paddingVertical: 8 },
-  channelRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 12, paddingHorizontal: 16 },
+  headerTitle: {
+    flex: 1,
+    fontSize: 28,
+    fontWeight: "600",
+    color: "#fff",
+    fontFamily: "serif",
+  },
+  headerAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+  body: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
+    paddingTop: 24,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#9CA3AF",
+    marginBottom: 12,
+    letterSpacing: 0.5,
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 32,
+    marginBottom: 12,
+  },
+  addFileText: { fontSize: 14, fontWeight: "700", color: PURPLE },
+  listContainer: {
+    backgroundColor: "#FCFAFF",
+    borderRadius: 12,
+    paddingVertical: 8,
+  },
+  channelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
   channelName: { fontSize: 16, fontWeight: "500", color: "#374151" },
-  dmRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 12, paddingHorizontal: 16 },
+  dmRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
   dmUserInfo: { flexDirection: "row", alignItems: "center" },
   userAvatar: { width: 36, height: 36, borderRadius: 18, marginRight: 12 },
-  placeholderAvatar: { width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, borderColor: "#D1C4DB", marginRight: 12, alignItems: "center", justifyContent: "center", backgroundColor: "#F6F0FA" },
+  placeholderAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: "#D1C4DB",
+    marginRight: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F6F0FA",
+  },
   dmUserName: { fontSize: 16, fontWeight: "500", color: "#374151" },
   unreadText: { fontSize: 14, fontWeight: "600", color: "#4B5563" },
-  fileRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16 },
-  fileIconWrapper: { width: 40, height: 40, borderRadius: 8, backgroundColor: '#F3E8FF', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  fileRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  fileIconWrapper: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: "#F3E8FF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
   fileInfo: { flex: 1, marginRight: 12 },
-  fileName: { fontSize: 16, fontWeight: '600', color: '#374151', marginBottom: 4 },
-  fileMeta: { fontSize: 13, color: '#6B7280' },
+  fileName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 4,
+  },
+  fileMeta: { fontSize: 13, color: "#6B7280" },
   emptyText: { padding: 16, color: "#9CA3AF", fontStyle: "italic" },
-  
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  modalContent: { width: '100%', backgroundColor: '#fff', borderRadius: 16, padding: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 5 },
-  modalContentLarge: { width: '100%', height: '80%', backgroundColor: '#fff', borderRadius: 16, padding: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 5 },
-  modalTitle: { fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 16 },
-  
-  uploadTypeToggle: { flexDirection: 'row', backgroundColor: '#F3F4F6', borderRadius: 8, padding: 4, marginBottom: 20 },
-  toggleBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 8, borderRadius: 6, gap: 6 },
-  toggleBtnActive: { backgroundColor: PURPLE },
-  toggleBtnText: { fontSize: 14, fontWeight: '600', color: '#6B7280' },
-  toggleBtnTextActive: { color: '#fff' },
 
-  inputLabel: { fontSize: 14, fontWeight: '600', color: '#4B5563', marginBottom: 6 },
-  textInput: { backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: '#111827', marginBottom: 16 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalContent: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  modalContentLarge: {
+    width: "100%",
+    height: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#111827",
+    marginBottom: 16,
+  },
+
+  uploadTypeToggle: {
+    flexDirection: "row",
+    backgroundColor: "#F3F4F6",
+    borderRadius: 8,
+    padding: 4,
+    marginBottom: 20,
+  },
+  toggleBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+    borderRadius: 6,
+    gap: 6,
+  },
+  toggleBtnActive: { backgroundColor: PURPLE },
+  toggleBtnText: { fontSize: 14, fontWeight: "600", color: "#6B7280" },
+  toggleBtnTextActive: { color: "#fff" },
+
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#4B5563",
+    marginBottom: 6,
+  },
+  textInput: {
+    backgroundColor: "#F9FAFB",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: "#111827",
+    marginBottom: 16,
+  },
   textArea: { height: 120 },
 
-  mockPickImageBtn: { height: 120, backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#D1D5DB', borderStyle: 'dashed', borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 16, gap: 8 },
-  mockPickImageText: { fontSize: 14, color: PURPLE, fontWeight: '600' },
-  imagePreviewContainer: { height: 160, borderRadius: 10, marginBottom: 16, overflow: 'hidden' },
-  imagePreview: { width: '100%', height: '100%' },
-  removeImageBtn: { position: 'absolute', top: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.6)', padding: 6, borderRadius: 12 },
+  mockPickImageBtn: {
+    height: 120,
+    backgroundColor: "#F9FAFB",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderStyle: "dashed",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+    gap: 8,
+  },
+  mockPickImageText: { fontSize: 14, color: PURPLE, fontWeight: "600" },
+  imagePreviewContainer: {
+    height: 160,
+    borderRadius: 10,
+    marginBottom: 16,
+    overflow: "hidden",
+  },
+  imagePreview: { width: "100%", height: "100%" },
+  removeImageBtn: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    padding: 6,
+    borderRadius: 12,
+  },
 
-  modalButtonRow: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12, marginTop: 8 },
-  modalBtn: { paddingVertical: 12, paddingHorizontal: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  modalBtnCancel: { backgroundColor: '#F3F4F6' },
+  modalButtonRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 12,
+    marginTop: 8,
+  },
+  modalBtn: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalBtnCancel: { backgroundColor: "#F3F4F6" },
   modalBtnSubmit: { backgroundColor: PURPLE },
-  btnCancelText: { color: '#4B5563', fontWeight: '600', fontSize: 16 },
-  btnSubmitText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  btnCancelText: { color: "#4B5563", fontWeight: "600", fontSize: 16 },
+  btnSubmitText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 
-  viewFileHeader: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB', paddingBottom: 16, marginBottom: 12 },
-  fileIconWrapperLarge: { width: 48, height: 48, borderRadius: 10, backgroundColor: '#F3E8FF', alignItems: 'center', justifyContent: 'center', marginRight: 16 },
-  viewFileName: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 4 },
-  viewFileMeta: { fontSize: 14, color: '#6B7280' },
+  viewFileHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+    paddingBottom: 16,
+    marginBottom: 12,
+  },
+  fileIconWrapperLarge: {
+    width: 48,
+    height: 48,
+    borderRadius: 10,
+    backgroundColor: "#F3E8FF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+  },
+  viewFileName: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111827",
+    marginBottom: 4,
+  },
+  viewFileMeta: { fontSize: 14, color: "#6B7280" },
   closeIconBtn: { padding: 4, marginLeft: 8 },
-  fileContentScroll: { flex: 1, backgroundColor: '#F9FAFB', borderRadius: 12, borderWidth: 1, borderColor: '#E5E7EB' },
-  fileContentInner: { padding: 16, paddingBottom: 32 }, 
-  fileContentText: { fontSize: 15, color: '#374151', lineHeight: 24, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
-  imageViewerContainer: { flex: 1, backgroundColor: '#000', borderRadius: 12, overflow: 'hidden' },
-  fullImage: { width: '100%', height: '100%' }
+  fileContentScroll: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  fileContentInner: { padding: 16, paddingBottom: 32 },
+  fileContentText: {
+    fontSize: 15,
+    color: "#374151",
+    lineHeight: 24,
+    fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+  },
+  imageViewerContainer: {
+    flex: 1,
+    backgroundColor: "#000",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  fullImage: { width: "100%", height: "100%" },
 });
