@@ -2,13 +2,13 @@ import React, { useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
 const PURPLE = "#4B1363";
@@ -27,9 +27,13 @@ export default function SignupScreen() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("student");
 
+  const fullNameOk = !!fullName.trim();
+  const emailOk = isValidEmail(email);
+  const passwordOk = password.length >= 6;
+
   const canSubmit = useMemo(() => {
-    return !!fullName.trim() && isValidEmail(email) && password.length >= 6;
-  }, [email, fullName, password]);
+    return fullNameOk && emailOk && passwordOk;
+  }, [emailOk, fullNameOk, passwordOk]);
 
   const onRegister = () => {
     router.replace("/workspace");
@@ -49,12 +53,15 @@ export default function SignupScreen() {
             <TextInput
               value={fullName}
               onChangeText={setFullName}
-              placeholder="Value"
+              placeholder="Jane Doe"
               placeholderTextColor="#B5B5B5"
               style={styles.input}
               autoCapitalize="words"
               returnKeyType="next"
             />
+            <Text style={[styles.hint, fullNameOk ? styles.hintOk : styles.hintError]}>
+              {fullNameOk ? "" : "Full name is required"}
+            </Text>
           </View>
 
           <View style={styles.fieldBlock}>
@@ -62,7 +69,7 @@ export default function SignupScreen() {
             <TextInput
               value={email}
               onChangeText={setEmail}
-              placeholder="Value"
+              placeholder="name@example.com"
               placeholderTextColor="#B5B5B5"
               style={styles.input}
               keyboardType="email-address"
@@ -70,6 +77,9 @@ export default function SignupScreen() {
               autoCorrect={false}
               returnKeyType="next"
             />
+            <Text style={[styles.hint, emailOk ? styles.hintOk : styles.hintError]}>
+              {emailOk ? "" : "Enter a valid email address"}
+            </Text>
           </View>
 
           <View style={styles.fieldBlock}>
@@ -77,13 +87,18 @@ export default function SignupScreen() {
             <TextInput
               value={password}
               onChangeText={setPassword}
-              placeholder="Value"
+              placeholder="At least 6 characters"
               placeholderTextColor="#B5B5B5"
               style={styles.input}
               secureTextEntry
               autoCapitalize="none"
               returnKeyType="done"
             />
+            <Text style={[styles.hint, passwordOk ? styles.hintOk : styles.hintError]}>
+              {passwordOk
+                ? `Password length: ${password.length}`
+                : `Password must be at least 6 characters (${password.length}/6)`}
+            </Text>
           </View>
 
           <View style={styles.roleRow}>
@@ -192,6 +207,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontSize: 18,
     color: "#222",
+  },
+
+  hint: {
+    marginTop: 8,
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  hintOk: {
+    color: "#2E7D32",
+  },
+  hintError: {
+    color: "#C62828",
   },
 
   roleRow: {
