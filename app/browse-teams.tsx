@@ -327,7 +327,6 @@ export default function BrowseTeamsScreen() {
           })}
         </View>
 
-        {/* Achievements Multi-Select */}
         <Text style={styles.advancedFilterLabel}>
           Achievements (Must have all)
         </Text>
@@ -418,7 +417,7 @@ export default function BrowseTeamsScreen() {
             <Feather name="search" size={20} color="#9CA3AF" />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search teams, tags, or skills..."
+              placeholder="Search..." 
               placeholderTextColor="#9CA3AF"
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -590,29 +589,28 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
   },
   filterContainer: {
-    height: 50,
-    // marginVertical: 12,
-    // marginHorizontal: 0,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    minHeight: 50, 
     marginVertical: 16,
     flexGrow: 0,
-    overflow: "visible",
+    flexShrink: 0,
   },
   filterContent: {
+    paddingHorizontal: 20, 
     gap: 8,
-    paddingRight: 20,
+    paddingRight: 32,
+    alignItems: 'center',
+    justifyContent: 'center', 
   },
   filterTab: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    height: 36, 
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: "#D1D5DB",
     backgroundColor: "#F9FAFB",
-    minWidth: 80,
   },
   filterTabActive: {
     backgroundColor: PURPLE,

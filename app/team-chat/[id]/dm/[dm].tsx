@@ -1,4 +1,3 @@
-// /app/team-chat/[id]/dm/[dm].tsx
 import { mockTeams } from "@/constants/mock-teams";
 import { mockUsers } from "@/constants/mock-users";
 import { useAppContext } from "@/context/AppContext";
